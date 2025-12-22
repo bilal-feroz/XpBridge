@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/xp_button.dart';
 import '../../widgets/xp_card.dart';
@@ -25,10 +26,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() {
-    // For now, just navigate to role select
-    // In production, this would validate credentials
-    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
-      context.goNamed('roleSelect');
+    // Simple mock login: route students straight to the dashboard with the XPBridge pitch.
+    if (_emailController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty) {
+      final appState = AppStateScope.of(context);
+      appState.login(role: UserRole.student);
+      context.goNamed('studentDashboard');
     }
   }
 
@@ -75,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 32),
               Center(
                 child: Text(
-                  'Welcome Back',
+                  'Welcome Back to XPBridge',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -84,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 8),
               Center(
                 child: Text(
-                  'Sign in to continue your journey',
+                  'UAE youth micro-projects (2-5 hrs) for students aged 15-22',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.black.withValues(alpha: 0.6),
                   ),

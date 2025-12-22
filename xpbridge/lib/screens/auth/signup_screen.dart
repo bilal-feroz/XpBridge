@@ -72,7 +72,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Join XPBridge and start your journey',
+                'Join XPBridge to earn real experience through short UAE-safe missions',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.black.withValues(alpha: 0.6),
                 ),

@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Connect students with startups.',
+                'UAE youth micro-projects for 15-22 year olds.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.black.withValues(alpha: 0.65),
                 ),

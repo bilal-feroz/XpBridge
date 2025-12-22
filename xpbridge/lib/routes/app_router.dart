@@ -69,12 +69,14 @@ class AppRouter {
       GoRoute(
         name: 'myApplications',
         path: '/student/applications',
-        pageBuilder: (context, state) => _slide(const _PlaceholderScreen(title: 'My Applications')),
+        pageBuilder: (context, state) =>
+            _slide(const _PlaceholderScreen(title: 'My Applications')),
       ),
       GoRoute(
         name: 'studentProfile',
         path: '/student/profile',
-        pageBuilder: (context, state) => _slide(const _PlaceholderScreen(title: 'My Profile')),
+        pageBuilder: (context, state) =>
+            _slide(const _PlaceholderScreen(title: 'My Profile')),
       ),
 
       // Startup Flow
@@ -99,7 +101,8 @@ class AppRouter {
       GoRoute(
         name: 'startupProfile',
         path: '/startup/profile',
-        pageBuilder: (context, state) => _slide(const _PlaceholderScreen(title: 'Company Profile')),
+        pageBuilder: (context, state) =>
+            _slide(const _PlaceholderScreen(title: 'Company Profile')),
       ),
     ],
   );
@@ -160,10 +163,7 @@ class _PlaceholderScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
-            Text(
-              'Coming soon!',
-              style: TextStyle(color: Colors.grey.shade600),
-            ),
+            Text('Coming soon!', style: TextStyle(color: Colors.grey.shade600)),
           ],
         ),
       ),

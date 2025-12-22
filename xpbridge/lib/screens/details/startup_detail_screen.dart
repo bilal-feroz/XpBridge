@@ -76,9 +76,7 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
               const SizedBox(height: 8),
               Text(
                 'Write a brief message to introduce yourself.',
-                style: TextStyle(
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
+                style: TextStyle(color: Colors.black.withValues(alpha: 0.6)),
               ),
               const SizedBox(height: 16),
               TextField(
@@ -148,11 +146,7 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
           child: Column(
             children: [
               const XPAppBar(title: 'Not Found'),
-              const Expanded(
-                child: Center(
-                  child: Text('Startup not found'),
-                ),
-              ),
+              const Expanded(child: Center(child: Text('Startup not found'))),
             ],
           ),
         ),
@@ -168,10 +162,7 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            XPAppBar(
-              title: startup.companyName,
-              subtitle: startup.industry,
-            ),
+            XPAppBar(title: startup.companyName, subtitle: startup.industry),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
@@ -189,7 +180,9 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                                 width: 64,
                                 height: 64,
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primary.withValues(alpha: 0.1),
+                                  color: AppTheme.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   borderRadius: BorderRadius.circular(18),
                                 ),
                                 child: Center(
@@ -222,7 +215,9 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                                         vertical: 4,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: AppTheme.primary.withValues(alpha: 0.1),
+                                        color: AppTheme.primary.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
@@ -304,7 +299,9 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                                     'You have ${matchingSkills.length} matching skill${matchingSkills.length > 1 ? 's' : ''}: ${matchingSkills.join(", ")}',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: Colors.black.withValues(alpha: 0.7),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.7,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -339,7 +336,9 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                                 : Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(12),
                             border: isMatch
-                                ? Border.all(color: Colors.green.withValues(alpha: 0.3))
+                                ? Border.all(
+                                    color: Colors.green.withValues(alpha: 0.3),
+                                  )
                                 : null,
                           ),
                           child: Row(
@@ -357,7 +356,9 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                                 skill,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: isMatch ? Colors.green.shade700 : Colors.black87,
+                                  color: isMatch
+                                      ? Colors.green.shade700
+                                      : Colors.black87,
                                 ),
                               ),
                             ],

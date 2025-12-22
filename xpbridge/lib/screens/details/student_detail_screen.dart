@@ -34,11 +34,7 @@ class StudentDetailScreen extends StatelessWidget {
           child: Column(
             children: [
               const XPAppBar(title: 'Not Found'),
-              const Expanded(
-                child: Center(
-                  child: Text('Student not found'),
-                ),
-              ),
+              const Expanded(child: Center(child: Text('Student not found'))),
             ],
           ),
         ),
@@ -73,7 +69,9 @@ class StudentDetailScreen extends StatelessWidget {
                             children: [
                               CircleAvatar(
                                 radius: 36,
-                                backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
+                                backgroundColor: AppTheme.primary.withValues(
+                                  alpha: 0.1,
+                                ),
                                 child: Text(
                                   student.name[0].toUpperCase(),
                                   style: const TextStyle(
@@ -101,7 +99,9 @@ class StudentDetailScreen extends StatelessWidget {
                                         student.education!,
                                         style: TextStyle(
                                           fontSize: 13,
-                                          color: Colors.black.withValues(alpha: 0.6),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.6,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -195,7 +195,9 @@ class StudentDetailScreen extends StatelessWidget {
                                     '${matchingSkills.length} of your required skills: ${matchingSkills.join(", ")}',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: Colors.black.withValues(alpha: 0.7),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.7,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -230,7 +232,9 @@ class StudentDetailScreen extends StatelessWidget {
                                 : Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(12),
                             border: isMatch
-                                ? Border.all(color: Colors.green.withValues(alpha: 0.3))
+                                ? Border.all(
+                                    color: Colors.green.withValues(alpha: 0.3),
+                                  )
                                 : null,
                           ),
                           child: Row(
@@ -248,7 +252,9 @@ class StudentDetailScreen extends StatelessWidget {
                                 skill,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: isMatch ? Colors.green.shade700 : Colors.black87,
+                                  color: isMatch
+                                      ? Colors.green.shade700
+                                      : Colors.black87,
                                 ),
                               ),
                             ],
