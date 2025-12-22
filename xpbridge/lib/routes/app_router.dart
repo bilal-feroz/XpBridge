@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../app.dart';
-import '../data/dummy_data.dart';
-import '../models/mission.dart';
-import '../screens/missions/mission_details_screen.dart';
-import '../screens/missions/mission_feed_screen.dart';
-import '../screens/missions/mission_workspace_screen.dart';
-import '../screens/missions/submission_success_screen.dart';
-import '../screens/onboarding/age_band_screen.dart';
-import '../screens/onboarding/role_select_screen.dart';
+import '../screens/auth/login_screen.dart';
+import '../screens/auth/signup_screen.dart';
+import '../screens/dashboard/startup_dashboard_screen.dart';
+import '../screens/dashboard/student_dashboard_screen.dart';
+import '../screens/details/startup_detail_screen.dart';
+import '../screens/details/student_detail_screen.dart';
+import '../screens/onboarding/startup_setup_screen.dart';
 import '../screens/onboarding/student_setup_screen.dart';
-import '../screens/passport/skills_passport_screen.dart';
 import '../screens/splash/splash_screen.dart';
 
 class AppRouter {
@@ -23,76 +21,88 @@ class AppRouter {
     initialLocation: '/',
     refreshListenable: appState,
     routes: [
+      // Splash
       GoRoute(
         name: 'splash',
         path: '/',
         pageBuilder: (context, state) => _fade(const SplashScreen()),
       ),
+
+      // Auth
+      GoRoute(
+        name: 'login',
+        path: '/login',
+        pageBuilder: (context, state) => _slide(const LoginScreen()),
+      ),
+      GoRoute(
+        name: 'signup',
+        path: '/signup',
+        pageBuilder: (context, state) => _slide(const SignupScreen()),
+      ),
+
+      // Role Select (keeping for backward compatibility, redirects to login)
       GoRoute(
         name: 'roleSelect',
         path: '/role',
-        pageBuilder: (context, state) => _slide(const RoleSelectScreen()),
+        redirect: (context, state) => '/login',
       ),
-      GoRoute(
-        name: 'ageBand',
-        path: '/age',
-        pageBuilder: (context, state) => _slide(const AgeBandScreen()),
-      ),
+
+      // Student Flow
       GoRoute(
         name: 'studentSetup',
-        path: '/setup',
+        path: '/student/setup',
         pageBuilder: (context, state) => _slide(const StudentSetupScreen()),
       ),
       GoRoute(
-        name: 'missionFeed',
-        path: '/missions',
-        pageBuilder: (context, state) => _fade(const MissionFeedScreen()),
+        name: 'studentDashboard',
+        path: '/student/dashboard',
+        pageBuilder: (context, state) => _fade(const StudentDashboardScreen()),
       ),
       GoRoute(
-        name: 'missionDetails',
-        path: '/missions/:id',
+        name: 'startupDetail',
+        path: '/student/startup/:id',
         pageBuilder: (context, state) {
-          final mission = _resolveMission(state);
-          return _slide(MissionDetailsScreen(mission: mission));
+          final id = state.pathParameters['id'] ?? '';
+          return _slide(StartupDetailScreen(startupId: id));
         },
       ),
       GoRoute(
-        name: 'missionWorkspace',
-        path: '/missions/:id/workspace',
+        name: 'myApplications',
+        path: '/student/applications',
+        pageBuilder: (context, state) => _slide(const _PlaceholderScreen(title: 'My Applications')),
+      ),
+      GoRoute(
+        name: 'studentProfile',
+        path: '/student/profile',
+        pageBuilder: (context, state) => _slide(const _PlaceholderScreen(title: 'My Profile')),
+      ),
+
+      // Startup Flow
+      GoRoute(
+        name: 'startupSetup',
+        path: '/startup/setup',
+        pageBuilder: (context, state) => _slide(const StartupSetupScreen()),
+      ),
+      GoRoute(
+        name: 'startupDashboard',
+        path: '/startup/dashboard',
+        pageBuilder: (context, state) => _fade(const StartupDashboardScreen()),
+      ),
+      GoRoute(
+        name: 'studentDetail',
+        path: '/startup/student/:id',
         pageBuilder: (context, state) {
-          final mission = _resolveMission(state);
-          return _slide(MissionWorkspaceScreen(mission: mission));
+          final id = state.pathParameters['id'] ?? '';
+          return _slide(StudentDetailScreen(studentId: id));
         },
       ),
       GoRoute(
-        name: 'submissionSuccess',
-        path: '/submission-success',
-        pageBuilder: (context, state) {
-          final extras = state.extra is Map
-              ? state.extra as Map
-              : <String, dynamic>{};
-          final Mission? mission = extras['mission'] as Mission?;
-          final int xp = extras['xp'] as int? ?? mission?.xp ?? 60;
-          return _fade(SubmissionSuccessScreen(mission: mission, xp: xp));
-        },
-      ),
-      GoRoute(
-        name: 'skillsPassport',
-        path: '/passport',
-        pageBuilder: (context, state) => _slide(const SkillsPassportScreen()),
+        name: 'startupProfile',
+        path: '/startup/profile',
+        pageBuilder: (context, state) => _slide(const _PlaceholderScreen(title: 'Company Profile')),
       ),
     ],
   );
-
-  Mission _resolveMission(GoRouterState state) {
-    final mission = state.extra is Mission ? state.extra as Mission : null;
-    if (mission != null) return mission;
-    final id = state.pathParameters['id'];
-    return DummyData.missions.firstWhere(
-      (m) => m.id == id,
-      orElse: () => DummyData.missions.first,
-    );
-  }
 
   static CustomTransitionPage _fade(Widget child) {
     return CustomTransitionPage(
@@ -125,6 +135,38 @@ class AppRouter {
           ),
         );
       },
+    );
+  }
+}
+
+// Placeholder for screens not yet implemented
+class _PlaceholderScreen extends StatelessWidget {
+  const _PlaceholderScreen({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.construction, size: 64, color: Colors.grey.shade400),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Coming soon!',
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

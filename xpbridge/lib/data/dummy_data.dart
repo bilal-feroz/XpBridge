@@ -1,15 +1,17 @@
-import 'package:flutter/material.dart';
-
-import '../models/badge.dart';
-import '../models/mission.dart';
+import '../models/application.dart';
+import '../models/startup_profile.dart';
+import '../models/student_profile.dart';
 
 class DummyData {
-  static final tracks = <String>[
-    'Design',
-    'AI',
+  static final industries = <String>[
+    'Technology',
+    'Healthcare',
+    'Finance',
+    'Education',
+    'E-commerce',
     'Marketing',
-    'Coding',
-    'Business',
+    'Design',
+    'AI/ML',
   ];
 
   static final skillPool = <String>[
@@ -20,131 +22,162 @@ class DummyData {
     'Copywriting',
     'Social Media',
     'Python',
+    'JavaScript',
+    'Flutter',
+    'React',
     'No-code',
     'Pitching',
     'Market Sizing',
+    'Data Analysis',
+    'UI/UX Design',
+    'Video Editing',
   ];
 
-  static final missions = <Mission>[
-    const Mission(
-      id: 'm1',
-      title: 'Redesign the onboarding walkthrough',
-      startupName: 'BrightSeed Labs',
-      timeEstimate: '6-8 hrs',
-      reward: '\$120 stipend',
-      tags: ['Design', 'Figma', 'UX Writing'],
-      safeForTeens: true,
-      summary:
-          'Create a concise 3-step walkthrough for new users showcasing the product value. Use playful illustrations and accessible copy.',
-      deliverables: [
-        'Figma prototype with 3 screens',
-        'Copy doc with 2 headline options',
-        'Accessibility checklist (contrast + tap targets)',
-      ],
-      safetyNotes: [
-        'No sensitive data; use placeholder emails.',
-        'Daily check-ins via shared doc comments only.',
-      ],
-      xp: 120,
+  static final startups = <StartupProfile>[
+    StartupProfile(
+      id: 's1',
+      companyName: 'BrightSeed Labs',
+      email: 'hello@brightseed.io',
+      description:
+          'Building the future of personalized learning with AI-powered education tools.',
+      industry: 'Education',
+      requiredSkills: ['Figma', 'UI/UX Design', 'User Research'],
+      websiteUrl: 'https://brightseed.io',
+      projectDetails:
+          'Looking for design interns to help redesign our student dashboard and create engaging onboarding experiences.',
+      createdAt: DateTime(2024, 1, 15),
     ),
-    const Mission(
-      id: 'm2',
-      title: 'AI research brief: competitor scan',
-      startupName: 'Nova AI',
-      timeEstimate: '4-5 hrs',
-      reward: '\$90 stipend',
-      tags: ['AI', 'Research', 'Slides'],
-      safeForTeens: true,
-      summary:
-          'Collect a quick scan of AI tools solving the same problem. Highlight 3 differentiators and 2 risks.',
-      deliverables: [
-        '5-slide deck summarizing competitors',
-        'Comparison table (pricing, features)',
-        'One bold idea to stand out',
-      ],
-      safetyNotes: [
-        'Use public sources only.',
-        'No outreach or signups required.',
-      ],
-      xp: 90,
+    StartupProfile(
+      id: 's2',
+      companyName: 'Nova AI',
+      email: 'careers@nova-ai.com',
+      description:
+          'Cutting-edge AI research company focused on natural language processing and automation.',
+      industry: 'AI/ML',
+      requiredSkills: ['Python', 'Prompting', 'Data Analysis'],
+      websiteUrl: 'https://nova-ai.com',
+      projectDetails:
+          'Seeking students passionate about AI to help with research, data labeling, and prompt engineering.',
+      createdAt: DateTime(2024, 2, 20),
     ),
-    const Mission(
-      id: 'm3',
-      title: 'Product explainer micro-video',
+    StartupProfile(
+      id: 's3',
+      companyName: 'Pulse Health',
+      email: 'team@pulsehealth.co',
+      description:
+          'Digital health platform making wellness accessible through mobile-first experiences.',
+      industry: 'Healthcare',
+      requiredSkills: ['Flutter', 'UI/UX Design', 'Copywriting'],
+      websiteUrl: 'https://pulsehealth.co',
+      projectDetails:
+          'Need mobile dev interns to help build new features and improve app performance.',
+      createdAt: DateTime(2024, 3, 10),
+    ),
+    StartupProfile(
+      id: 's4',
+      companyName: 'FlowGrid',
+      email: 'jobs@flowgrid.io',
+      description:
+          'Workflow automation for small businesses. Simplify your operations.',
+      industry: 'Technology',
+      requiredSkills: ['JavaScript', 'React', 'No-code'],
+      websiteUrl: 'https://flowgrid.io',
+      projectDetails:
+          'Looking for frontend developers to help build integrations and improve our dashboard.',
+      createdAt: DateTime(2024, 4, 5),
+    ),
+    StartupProfile(
+      id: 's5',
+      companyName: 'LumenOS',
+      email: 'hello@lumenos.dev',
+      description:
+          'Open-source operating system for creators. Lightweight, fast, and beautiful.',
+      industry: 'Technology',
+      requiredSkills: ['Python', 'UI/UX Design', 'Video Editing'],
+      websiteUrl: 'https://lumenos.dev',
+      projectDetails:
+          'Seeking contributors for UI design, documentation, and promotional content.',
+      createdAt: DateTime(2024, 5, 1),
+    ),
+  ];
+
+  static final students = <StudentProfile>[
+    StudentProfile(
+      id: 'st1',
+      name: 'Alex Chen',
+      email: 'alex.chen@university.edu',
+      bio: 'Computer Science student passionate about mobile development and AI.',
+      education: 'BSc Computer Science - Stanford University',
+      skills: ['Flutter', 'Python', 'Figma', 'UI/UX Design'],
+      availabilityHours: 15,
+      portfolioUrl: 'https://alexchen.dev',
+      createdAt: DateTime(2024, 1, 10),
+    ),
+    StudentProfile(
+      id: 'st2',
+      name: 'Sarah Miller',
+      email: 'sarah.m@college.edu',
+      bio: 'Design student with a love for creating beautiful user experiences.',
+      education: 'BA Graphic Design - RISD',
+      skills: ['Figma', 'Canva', 'UI/UX Design', 'User Research'],
+      availabilityHours: 20,
+      portfolioUrl: 'https://sarahmiller.design',
+      createdAt: DateTime(2024, 2, 5),
+    ),
+    StudentProfile(
+      id: 'st3',
+      name: 'James Wilson',
+      email: 'jwilson@tech.edu',
+      bio: 'Full-stack developer interested in startups and entrepreneurship.',
+      education: 'MSc Software Engineering - MIT',
+      skills: ['JavaScript', 'React', 'Python', 'Data Analysis'],
+      availabilityHours: 10,
+      portfolioUrl: 'https://jameswilson.io',
+      createdAt: DateTime(2024, 3, 15),
+    ),
+    StudentProfile(
+      id: 'st4',
+      name: 'Emily Rodriguez',
+      email: 'emily.r@marketing.edu',
+      bio: 'Marketing major with experience in social media and content creation.',
+      education: 'BA Marketing - NYU',
+      skills: ['Social Media', 'Copywriting', 'Video Editing', 'Canva'],
+      availabilityHours: 25,
+      createdAt: DateTime(2024, 4, 20),
+    ),
+    StudentProfile(
+      id: 'st5',
+      name: 'David Kim',
+      email: 'dkim@ai.edu',
+      bio: 'AI researcher focused on NLP and machine learning applications.',
+      education: 'PhD Candidate - AI Lab, Berkeley',
+      skills: ['Python', 'Prompting', 'Data Analysis', 'Market Sizing'],
+      availabilityHours: 12,
+      createdAt: DateTime(2024, 5, 10),
+    ),
+  ];
+
+  static final applications = <Application>[
+    Application(
+      id: 'a1',
+      studentId: 'st1',
+      startupId: 's3',
+      studentName: 'Alex Chen',
       startupName: 'Pulse Health',
-      timeEstimate: '5-7 hrs',
-      reward: '\$140 stipend',
-      tags: ['Marketing', 'Video', 'Storytelling'],
-      safeForTeens: false,
-      summary:
-          'Craft a 40-second vertical video explaining the product promise. Focus on clarity, calm pacing, and a confident CTA.',
-      deliverables: [
-        'Storyboard with 6-8 frames',
-        'Final MP4 or link',
-        'Caption file and CTA copy',
-      ],
-      safetyNotes: ['Avoid medical advice; use disclaimers where relevant.'],
-      xp: 140,
+      status: ApplicationStatus.pending,
+      message: 'I would love to contribute to your mobile app development!',
+      appliedAt: DateTime.now().subtract(const Duration(days: 2)),
     ),
-    const Mission(
-      id: 'm4',
-      title: 'Landing page wireframe for beta',
-      startupName: 'LumenOS',
-      timeEstimate: '6 hrs',
-      reward: '\$110 stipend',
-      tags: ['Coding', 'Wireframe', 'UI'],
-      safeForTeens: true,
-      summary:
-          'Design a responsive landing wireframe with a hero, proof, and CTA. Keep it focused on beta signups.',
-      deliverables: [
-        'Responsive wireframe (desktop + mobile)',
-        'Component list with spacing tokens',
-        'Copy notes for hero + CTA',
-      ],
-      safetyNotes: ['Use royalty-free assets only.'],
-      xp: 110,
-    ),
-    const Mission(
-      id: 'm5',
-      title: 'Pitch one-page for investors',
-      startupName: 'FlowGrid',
-      timeEstimate: '3-4 hrs',
-      reward: '\$85 stipend',
-      tags: ['Business', 'Pitch', 'Story'],
-      safeForTeens: false,
-      summary:
-          'Turn the messy notes into a crisp one-page pitch with market, traction, and a sharp ask. Tone: confident and concise.',
-      deliverables: [
-        'One-page PDF',
-        'Key metrics callouts',
-        'Suggested next steps',
-      ],
-      safetyNotes: ['Do not include confidential revenue numbers.'],
-      xp: 85,
-    ),
-  ];
-
-  static final badges = <BadgeModel>[
-    const BadgeModel(
-      id: 'b1',
-      name: 'Onboarding Whisperer',
-      description: 'Crafted a guided first-time UX that converts.',
-      earnedFrom: 'BrightSeed Labs',
-      color: Color(0xFF4C6FFF),
-    ),
-    const BadgeModel(
-      id: 'b2',
-      name: 'AI Scout',
-      description: 'Mapped the landscape of emerging AI tools.',
-      earnedFrom: 'Nova AI',
-      color: Color(0xFF38BDF8),
-    ),
-    const BadgeModel(
-      id: 'b3',
-      name: 'Storyteller',
-      description: 'Shipped a crisp 40s product explainer.',
-      earnedFrom: 'Pulse Health',
-      color: Color(0xFF8B5CF6),
+    Application(
+      id: 'a2',
+      studentId: 'st2',
+      startupId: 's1',
+      studentName: 'Sarah Miller',
+      startupName: 'BrightSeed Labs',
+      status: ApplicationStatus.interviewing,
+      message: 'Your mission to improve education aligns with my passion.',
+      appliedAt: DateTime.now().subtract(const Duration(days: 5)),
+      updatedAt: DateTime.now().subtract(const Duration(days: 1)),
     ),
   ];
 }

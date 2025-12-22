@@ -3,37 +3,79 @@ import 'package:go_router/go_router.dart';
 import 'package:xpbridge/routes/app_router.dart';
 import 'package:xpbridge/theme/app_theme.dart';
 
-import 'models/mission.dart';
-import 'models/user_profile.dart';
+import 'models/application.dart';
+import 'models/student_profile.dart';
+import 'models/startup_profile.dart';
 
-enum AgeBand { teen, adult }
-
-extension AgeBandLabel on AgeBand {
-  String get label => this == AgeBand.teen ? '15-17' : '18-21';
-  String get description =>
-      this == AgeBand.teen ? 'Guardrails on hours and safety' : 'Full access';
-}
+enum UserRole { student, startup }
 
 class AppState extends ChangeNotifier {
-  AgeBand? ageBand;
-  UserProfile? profile;
-  Mission? activeMission;
+  bool _isLoggedIn = false;
+  UserRole? _userRole;
+  StudentProfile? _studentProfile;
+  StartupProfile? _startupProfile;
+  List<Application> _applications = [];
 
-  bool get isTeen => ageBand == AgeBand.teen;
+  bool get isLoggedIn => _isLoggedIn;
+  UserRole? get userRole => _userRole;
+  StudentProfile? get studentProfile => _studentProfile;
+  StartupProfile? get startupProfile => _startupProfile;
+  List<Application> get applications => _applications;
 
-  void setAgeBand(AgeBand band) {
-    ageBand = band;
+  bool get isStudent => _userRole == UserRole.student;
+  bool get isStartup => _userRole == UserRole.startup;
+
+  void login({required UserRole role}) {
+    _isLoggedIn = true;
+    _userRole = role;
     notifyListeners();
   }
 
-  void saveProfile(UserProfile value) {
-    profile = value;
+  void logout() {
+    _isLoggedIn = false;
+    _userRole = null;
+    _studentProfile = null;
+    _startupProfile = null;
+    _applications = [];
     notifyListeners();
   }
 
-  void setActiveMission(Mission mission) {
-    activeMission = mission;
+  void setUserRole(UserRole role) {
+    _userRole = role;
     notifyListeners();
+  }
+
+  void saveStudentProfile(StudentProfile profile) {
+    _studentProfile = profile;
+    notifyListeners();
+  }
+
+  void saveStartupProfile(StartupProfile profile) {
+    _startupProfile = profile;
+    notifyListeners();
+  }
+
+  void addApplication(Application application) {
+    _applications = [..._applications, application];
+    notifyListeners();
+  }
+
+  void updateApplicationStatus(String applicationId, ApplicationStatus status) {
+    _applications = _applications.map((app) {
+      if (app.id == applicationId) {
+        return app.copyWith(status: status, updatedAt: DateTime.now());
+      }
+      return app;
+    }).toList();
+    notifyListeners();
+  }
+
+  List<Application> getApplicationsForStudent(String studentId) {
+    return _applications.where((app) => app.studentId == studentId).toList();
+  }
+
+  List<Application> getApplicationsForStartup(String startupId) {
+    return _applications.where((app) => app.startupId == startupId).toList();
   }
 }
 

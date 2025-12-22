@@ -14,6 +14,6 @@ void main() {
     await tester.pumpWidget(const XPBridgeApp());
     expect(find.text('XPBridge'), findsWidgets);
     await tester.pump(const Duration(milliseconds: 1200));
-    expect(find.text('Who are you?'), findsOneWidget);
+    expect(find.text('Welcome Back'), findsOneWidget);
   });
 }

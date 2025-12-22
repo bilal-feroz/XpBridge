@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen>
     )..forward();
 
     Timer(const Duration(seconds: 1), () {
-      if (mounted) context.goNamed('roleSelect');
+      if (mounted) context.goNamed('login');
     });
   }
 
@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               const SizedBox(height: 8),
               Text(
-                'Earn real experience before graduation.',
+                'Connect students with startups.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.black.withValues(alpha: 0.65),
                 ),

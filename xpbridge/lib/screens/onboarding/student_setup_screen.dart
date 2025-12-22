@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../app.dart';
 import '../../data/dummy_data.dart';
-import '../../models/user_profile.dart';
+import '../../models/student_profile.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/xp_button.dart';
 import '../../widgets/xp_card.dart';
@@ -18,20 +18,26 @@ class StudentSetupScreen extends StatefulWidget {
 }
 
 class _StudentSetupScreenState extends State<StudentSetupScreen> {
-  String? _track;
+  final _nameController = TextEditingController();
+  final _bioController = TextEditingController();
+  final _educationController = TextEditingController();
+  final _portfolioController = TextEditingController();
   final Set<String> _skills = {};
   double _hours = 10;
 
   @override
-  void initState() {
-    super.initState();
-    _track = DummyData.tracks.first;
+  void dispose() {
+    _nameController.dispose();
+    _bioController.dispose();
+    _educationController.dispose();
+    _portfolioController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final appState = AppStateScope.of(context);
-    final spacing = 10.0;
+    const spacing = 10.0;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -42,14 +48,14 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Set up your lane',
+                'Complete your profile',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 6),
               Text(
-                'We use this to recommend the best missions.',
+                'Help startups get to know you better.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.black.withValues(alpha: 0.6),
                 ),
@@ -60,24 +66,82 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const XPSectionTitle(title: 'Pick a track'),
+                      const XPSectionTitle(title: 'Basic Info'),
                       const SizedBox(height: 10),
-                      Wrap(
-                        spacing: spacing,
-                        runSpacing: spacing,
-                        children: DummyData.tracks
-                            .map(
-                              (track) => XPChoiceChip(
-                                label: track,
-                                selected: _track == track,
-                                onSelected: (_) =>
-                                    setState(() => _track = track),
+                      XPCard(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: _nameController,
+                              textCapitalization: TextCapitalization.words,
+                              decoration: InputDecoration(
+                                labelText: 'Full Name',
+                                hintText: 'Enter your name',
+                                prefixIcon: const Icon(Icons.person_outline),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: AppTheme.background,
                               ),
-                            )
-                            .toList(),
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: _educationController,
+                              decoration: InputDecoration(
+                                labelText: 'Education',
+                                hintText: 'e.g., BSc Computer Science - MIT',
+                                prefixIcon: const Icon(Icons.school_outlined),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: AppTheme.background,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: _bioController,
+                              maxLines: 3,
+                              decoration: InputDecoration(
+                                labelText: 'Bio',
+                                hintText: 'Tell startups about yourself...',
+                                prefixIcon: const Padding(
+                                  padding: EdgeInsets.only(bottom: 48),
+                                  child: Icon(Icons.edit_note),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: AppTheme.background,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: _portfolioController,
+                              keyboardType: TextInputType.url,
+                              decoration: InputDecoration(
+                                labelText: 'Portfolio URL (optional)',
+                                hintText: 'https://yourportfolio.com',
+                                prefixIcon: const Icon(Icons.link),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: AppTheme.background,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 22),
-                      const XPSectionTitle(title: 'Add 2-4 skills'),
+                      const XPSectionTitle(title: 'Select your skills (2-4)'),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: spacing,
@@ -129,7 +193,7 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'We keep minors below 15 hrs/week with breaks.',
+                              'Let startups know your availability.',
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     color: Colors.black.withValues(alpha: 0.6),
@@ -143,7 +207,6 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                         title: 'Preview',
                         actionLabel: 'Reset',
                         onActionTap: () => setState(() {
-                          _track = DummyData.tracks.first;
                           _skills.clear();
                           _hours = 10;
                         }),
@@ -156,26 +219,45 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                           children: [
                             Row(
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primary.withValues(
-                                      alpha: 0.12,
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
+                                CircleAvatar(
+                                  radius: 24,
+                                  backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
                                   child: Text(
-                                    _track ?? 'Track',
+                                    _nameController.text.isNotEmpty
+                                        ? _nameController.text[0].toUpperCase()
+                                        : '?',
                                     style: const TextStyle(
                                       fontWeight: FontWeight.w800,
                                       color: AppTheme.primary,
+                                      fontSize: 20,
                                     ),
                                   ),
                                 ),
-                                const Spacer(),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        _nameController.text.isNotEmpty
+                                            ? _nameController.text
+                                            : 'Your Name',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      if (_educationController.text.isNotEmpty)
+                                        Text(
+                                          _educationController.text,
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.black.withValues(alpha: 0.6),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
                                 Row(
                                   children: [
                                     const Icon(Icons.timer_outlined, size: 18),
@@ -222,17 +304,23 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
               ),
               const SizedBox(height: 10),
               XPButton(
-                label: 'Save & see missions',
+                label: 'Save & Continue',
                 icon: Icons.arrow_forward_rounded,
-                onPressed: (_track != null && _skills.length >= 2)
+                onPressed: (_nameController.text.isNotEmpty && _skills.length >= 2)
                     ? () {
-                        final profile = UserProfile(
-                          track: _track!,
+                        final profile = StudentProfile(
+                          id: 'user_${DateTime.now().millisecondsSinceEpoch}',
+                          name: _nameController.text,
+                          email: '', // Would come from auth
+                          bio: _bioController.text.isNotEmpty ? _bioController.text : null,
+                          education: _educationController.text.isNotEmpty ? _educationController.text : null,
                           skills: _skills.toList(),
                           availabilityHours: _hours,
+                          portfolioUrl: _portfolioController.text.isNotEmpty ? _portfolioController.text : null,
+                          createdAt: DateTime.now(),
                         );
-                        appState.saveProfile(profile);
-                        context.goNamed('missionFeed');
+                        appState.saveStudentProfile(profile);
+                        context.goNamed('studentDashboard');
                       }
                     : null,
               ),
