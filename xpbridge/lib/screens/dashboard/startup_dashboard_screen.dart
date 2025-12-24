@@ -37,7 +37,9 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
     var students = DummyData.students;
 
     if (_selectedSkill != null) {
-      students = students.where((s) => s.skills.contains(_selectedSkill)).toList();
+      students = students
+          .where((s) => s.skills.contains(_selectedSkill))
+          .toList();
     }
 
     return students;
@@ -58,7 +60,7 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
           children: [
             XPAppBar(
               title: 'Welcome, ${startupProfile?.companyName ?? "Startup"}',
-              subtitle: 'Find talented students',
+              subtitle: 'Post 2-5 hour micro-projects for UAE youth',
               showBack: false,
               trailing: IconButton(
                 onPressed: () => context.pushNamed('startupProfile'),
@@ -80,6 +82,41 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
                       ),
                     ),
                   ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: XPCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Why XPBridge for startups',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    _StartupBullet(
+                      text:
+                          'Bridge education and the future workforce with short, learning-first tasks instead of employment contracts.',
+                    ),
+                    _StartupBullet(
+                      text:
+                          'Built for UAE compliance: age-safe, time-limited, mentor-reviewed projects for 15-22 year olds.',
+                    ),
+                    _StartupBullet(
+                      text:
+                          'Students deliver portfolio-ready proof; you give feedback, badges, and early mentorship.',
+                    ),
+                    _StartupBullet(
+                      text:
+                          'Match by skills and interest to quickly evaluate talent and build your pipeline.',
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -111,7 +148,8 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
                     students: _filteredStudents,
                     startupSkills: startupProfile?.requiredSkills ?? [],
                     selectedSkill: _selectedSkill,
-                    onSkillSelected: (skill) => setState(() => _selectedSkill = skill),
+                    onSkillSelected: (skill) =>
+                        setState(() => _selectedSkill = skill),
                   ),
                   _ApplicationsTab(applications: applications),
                 ],
@@ -229,26 +267,16 @@ class _ApplicationsTab extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.inbox_outlined,
-              size: 64,
-              color: Colors.grey.shade300,
-            ),
+            Icon(Icons.inbox_outlined, size: 64, color: Colors.grey.shade300),
             const SizedBox(height: 16),
             Text(
               'No applications yet',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 8),
             Text(
               'Students will appear here when they apply',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade500,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
             ),
           ],
         ),
@@ -318,7 +346,9 @@ class _StudentCard extends StatelessWidget {
   final VoidCallback onTap;
 
   int get _matchingSkills {
-    return student.skills.where((skill) => startupSkills.contains(skill)).length;
+    return student.skills
+        .where((skill) => startupSkills.contains(skill))
+        .length;
   }
 
   @override
@@ -407,7 +437,11 @@ class _StudentCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.timer_outlined, size: 14, color: Colors.grey),
+                        const Icon(
+                          Icons.timer_outlined,
+                          size: 14,
+                          color: Colors.grey,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${student.availabilityHours.round()} hrs/wk',
@@ -632,11 +666,37 @@ class _ApplicationCard extends StatelessWidget {
   }
 }
 
+class _StartupBullet extends StatelessWidget {
+  const _StartupBullet({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Icon(Icons.check_circle, size: 16, color: AppTheme.primary),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 13, height: 1.35),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _BottomNav extends StatelessWidget {
-  const _BottomNav({
-    required this.currentIndex,
-    required this.onTap,
-  });
+  const _BottomNav({required this.currentIndex, required this.onTap});
 
   final int currentIndex;
   final ValueChanged<int> onTap;

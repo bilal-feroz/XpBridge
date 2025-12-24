@@ -106,7 +106,8 @@ class DummyData {
       id: 'st1',
       name: 'Alex Chen',
       email: 'alex.chen@university.edu',
-      bio: 'Computer Science student passionate about mobile development and AI.',
+      bio:
+          'Computer Science student passionate about mobile development and AI.',
       education: 'BSc Computer Science - Stanford University',
       skills: ['Flutter', 'Python', 'Figma', 'UI/UX Design'],
       availabilityHours: 15,
@@ -117,7 +118,8 @@ class DummyData {
       id: 'st2',
       name: 'Sarah Miller',
       email: 'sarah.m@college.edu',
-      bio: 'Design student with a love for creating beautiful user experiences.',
+      bio:
+          'Design student with a love for creating beautiful user experiences.',
       education: 'BA Graphic Design - RISD',
       skills: ['Figma', 'Canva', 'UI/UX Design', 'User Research'],
       availabilityHours: 20,
@@ -139,7 +141,8 @@ class DummyData {
       id: 'st4',
       name: 'Emily Rodriguez',
       email: 'emily.r@marketing.edu',
-      bio: 'Marketing major with experience in social media and content creation.',
+      bio:
+          'Marketing major with experience in social media and content creation.',
       education: 'BA Marketing - NYU',
       skills: ['Social Media', 'Copywriting', 'Video Editing', 'Canva'],
       availabilityHours: 25,

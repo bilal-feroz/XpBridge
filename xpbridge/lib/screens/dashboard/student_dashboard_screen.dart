@@ -23,11 +23,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     var startups = DummyData.startups;
 
     if (_selectedIndustry != null) {
-      startups = startups.where((s) => s.industry == _selectedIndustry).toList();
+      startups = startups
+          .where((s) => s.industry == _selectedIndustry)
+          .toList();
     }
 
     if (_selectedSkill != null) {
-      startups = startups.where((s) => s.requiredSkills.contains(_selectedSkill)).toList();
+      startups = startups
+          .where((s) => s.requiredSkills.contains(_selectedSkill))
+          .toList();
     }
 
     return startups;
@@ -45,7 +49,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
           children: [
             XPAppBar(
               title: 'Discover Startups',
-              subtitle: 'Find your next opportunity',
+              subtitle: 'UAE-safe micro-projects for students aged 15-22',
               showBack: false,
               trailing: IconButton(
                 onPressed: () => context.pushNamed('studentProfile'),
@@ -66,6 +70,50 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: XPCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Why XPBridge',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _bullet(
+                      'One-liner: UAE youth (15-22) earn real experience via short, learning-focused micro-projects for startups.',
+                    ),
+                    _bullet(
+                      'Problem: under-22 struggle for experience because of contracts, visas, and the “no experience → no opportunity” cycle.',
+                    ),
+                    _bullet(
+                      'Solution: small 2-5 hour tasks with feedback, portfolio proof, and mentor review — not employment.',
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Key features',
+                      style: TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    _bullet(
+                      'Micro-project marketplace that is safe, time-bound, and learning-first.',
+                    ),
+                    _bullet(
+                      'Verified youth portfolio with mentor feedback and XP.',
+                    ),
+                    _bullet(
+                      'Skill matching by interest and ability for quick wins.',
+                    ),
+                    _bullet('Gamified progression with levels and badges.'),
+                    _bullet('Safety & compliance layer tuned for UAE rules.'),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -79,11 +127,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                           isSelected: _selectedIndustry == null,
                           onTap: () => setState(() => _selectedIndustry = null),
                         ),
-                        ...DummyData.industries.take(4).map(
+                        ...DummyData.industries
+                            .take(4)
+                            .map(
                               (industry) => _FilterChip(
                                 label: industry,
                                 isSelected: _selectedIndustry == industry,
-                                onTap: () => setState(() => _selectedIndustry = industry),
+                                onTap: () => setState(
+                                  () => _selectedIndustry = industry,
+                                ),
                               ),
                             ),
                       ],
@@ -101,12 +153,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         ),
                         if (studentProfile != null)
                           ...studentProfile.skills.map(
-                                (skill) => _FilterChip(
-                                  label: skill,
-                                  isSelected: _selectedSkill == skill,
-                                  onTap: () => setState(() => _selectedSkill = skill),
-                                ),
-                              ),
+                            (skill) => _FilterChip(
+                              label: skill,
+                              isSelected: _selectedSkill == skill,
+                              onTap: () =>
+                                  setState(() => _selectedSkill = skill),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -381,11 +434,27 @@ class _StartupCard extends StatelessWidget {
   }
 }
 
+Widget _bullet(String text) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 4),
+          child: Icon(Icons.check_circle, size: 16, color: AppTheme.primary),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text, style: const TextStyle(fontSize: 13, height: 1.35)),
+        ),
+      ],
+    ),
+  );
+}
+
 class _BottomNav extends StatelessWidget {
-  const _BottomNav({
-    required this.currentIndex,
-    required this.onTap,
-  });
+  const _BottomNav({required this.currentIndex, required this.onTap});
 
   final int currentIndex;
   final ValueChanged<int> onTap;

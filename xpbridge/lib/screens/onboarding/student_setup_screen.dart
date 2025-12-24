@@ -55,7 +55,7 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                'Help startups get to know you better.',
+                'Help startups get to know you. Missions are short, safe, and learning-first.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.black.withValues(alpha: 0.6),
                 ),
@@ -221,7 +221,9 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 24,
-                                  backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
+                                  backgroundColor: AppTheme.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   child: Text(
                                     _nameController.text.isNotEmpty
                                         ? _nameController.text[0].toUpperCase()
@@ -236,7 +238,8 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         _nameController.text.isNotEmpty
@@ -252,7 +255,9 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                                           _educationController.text,
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: Colors.black.withValues(alpha: 0.6),
+                                            color: Colors.black.withValues(
+                                              alpha: 0.6,
+                                            ),
                                           ),
                                         ),
                                     ],
@@ -306,17 +311,24 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
               XPButton(
                 label: 'Save & Continue',
                 icon: Icons.arrow_forward_rounded,
-                onPressed: (_nameController.text.isNotEmpty && _skills.length >= 2)
+                onPressed:
+                    (_nameController.text.isNotEmpty && _skills.length >= 2)
                     ? () {
                         final profile = StudentProfile(
                           id: 'user_${DateTime.now().millisecondsSinceEpoch}',
                           name: _nameController.text,
                           email: '', // Would come from auth
-                          bio: _bioController.text.isNotEmpty ? _bioController.text : null,
-                          education: _educationController.text.isNotEmpty ? _educationController.text : null,
+                          bio: _bioController.text.isNotEmpty
+                              ? _bioController.text
+                              : null,
+                          education: _educationController.text.isNotEmpty
+                              ? _educationController.text
+                              : null,
                           skills: _skills.toList(),
                           availabilityHours: _hours,
-                          portfolioUrl: _portfolioController.text.isNotEmpty ? _portfolioController.text : null,
+                          portfolioUrl: _portfolioController.text.isNotEmpty
+                              ? _portfolioController.text
+                              : null,
                           createdAt: DateTime.now(),
                         );
                         appState.saveStudentProfile(profile);

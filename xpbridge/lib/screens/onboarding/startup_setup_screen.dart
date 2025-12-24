@@ -142,14 +142,17 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                               (industry) => XPChoiceChip(
                                 label: industry,
                                 selected: _selectedIndustry == industry,
-                                onSelected: (_) =>
-                                    setState(() => _selectedIndustry = industry),
+                                onSelected: (_) => setState(
+                                  () => _selectedIndustry = industry,
+                                ),
                               ),
                             )
                             .toList(),
                       ),
                       const SizedBox(height: 22),
-                      const XPSectionTitle(title: 'Skills you need (select 2-4)'),
+                      const XPSectionTitle(
+                        title: 'Skills you need (select 2-4)',
+                      ),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: spacing,
@@ -184,7 +187,8 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                           maxLines: 4,
                           decoration: InputDecoration(
                             labelText: 'What are you looking for?',
-                            hintText: 'Describe the projects or roles you need help with...',
+                            hintText:
+                                'Describe the projects or roles you need help with...',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
                               borderSide: BorderSide.none,
@@ -208,13 +212,16 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                                   width: 56,
                                   height: 56,
                                   decoration: BoxDecoration(
-                                    color: AppTheme.primary.withValues(alpha: 0.1),
+                                    color: AppTheme.primary.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   child: Center(
                                     child: Text(
                                       _companyNameController.text.isNotEmpty
-                                          ? _companyNameController.text[0].toUpperCase()
+                                          ? _companyNameController.text[0]
+                                                .toUpperCase()
                                           : '?',
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w800,
@@ -227,7 +234,8 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         _companyNameController.text.isNotEmpty
@@ -245,8 +253,12 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppTheme.primary.withValues(alpha: 0.1),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color: AppTheme.primary.withValues(
+                                            alpha: 0.1,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: Text(
                                           _selectedIndustry ?? 'Industry',
@@ -286,29 +298,32 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                             Wrap(
                               spacing: 8,
                               runSpacing: 8,
-                              children: (_requiredSkills.isEmpty
-                                      ? ['Select skills']
-                                      : _requiredSkills)
-                                  .map(
-                                    (skill) => Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Text(
-                                        skill,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 12,
+                              children:
+                                  (_requiredSkills.isEmpty
+                                          ? ['Select skills']
+                                          : _requiredSkills)
+                                      .map(
+                                        (skill) => Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade100,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            skill,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
+                                      )
+                                      .toList(),
                             ),
                           ],
                         ),
@@ -321,7 +336,8 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
               XPButton(
                 label: 'Save & Continue',
                 icon: Icons.arrow_forward_rounded,
-                onPressed: (_companyNameController.text.isNotEmpty &&
+                onPressed:
+                    (_companyNameController.text.isNotEmpty &&
                         _descriptionController.text.isNotEmpty &&
                         _requiredSkills.length >= 2)
                     ? () {
@@ -335,7 +351,8 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                           websiteUrl: _websiteController.text.isNotEmpty
                               ? _websiteController.text
                               : null,
-                          projectDetails: _projectDetailsController.text.isNotEmpty
+                          projectDetails:
+                              _projectDetailsController.text.isNotEmpty
                               ? _projectDetailsController.text
                               : null,
                           createdAt: DateTime.now(),
