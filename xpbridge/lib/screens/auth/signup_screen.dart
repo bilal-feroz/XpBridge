@@ -20,6 +20,11 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _obscurePassword = true;
   UserRole? _selectedRole;
 
+  String? _nameError;
+  String? _emailError;
+  String? _passwordError;
+  String? _roleError;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -28,11 +33,58 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
+  String? _validateName(String name) {
+    if (name.isEmpty) {
+      return 'Name is required';
+    }
+    if (name.length < 2) {
+      return 'Name must be at least 2 characters';
+    }
+    return null;
+  }
+
+  String? _validateEmail(String email) {
+    if (email.isEmpty) {
+      return 'Email is required';
+    }
+    if (!email.contains('@')) {
+      return 'Email must contain @';
+    }
+    if (!_isValidEmail(email)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String password) {
+    if (password.isEmpty) {
+      return 'Password is required';
+    }
+    if (password.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+    return null;
+  }
+
   void _handleSignup() {
-    if (_nameController.text.isNotEmpty &&
-        _emailController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty &&
-        _selectedRole != null) {
+    setState(() {
+      _nameError = _validateName(_nameController.text.trim());
+      _emailError = _validateEmail(_emailController.text.trim());
+      _passwordError = _validatePassword(_passwordController.text);
+      _roleError = _selectedRole == null ? 'Please select a role' : null;
+    });
+
+    if (_nameError == null &&
+        _emailError == null &&
+        _passwordError == null &&
+        _roleError == null) {
       final appState = AppStateScope.of(context);
       appState.login(role: _selectedRole!);
 
@@ -94,15 +146,43 @@ class _SignupScreenState extends State<SignupScreen> {
                     TextField(
                       controller: _nameController,
                       textCapitalization: TextCapitalization.words,
+                      onChanged: (_) {
+                        if (_nameError != null) {
+                          setState(() => _nameError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: 'Enter your name',
-                        prefixIcon: const Icon(Icons.person_outline),
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          color: _nameError != null ? Colors.red : null,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                          borderSide: _nameError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: _nameError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: _nameError != null
+                                ? Colors.red
+                                : AppTheme.primary,
+                          ),
                         ),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: _nameError != null
+                            ? Colors.red.withValues(alpha: 0.05)
+                            : AppTheme.background,
+                        errorText: _nameError,
+                        errorStyle: const TextStyle(fontSize: 12),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -117,15 +197,43 @@ class _SignupScreenState extends State<SignupScreen> {
                     TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
+                      onChanged: (_) {
+                        if (_emailError != null) {
+                          setState(() => _emailError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: 'Enter your email',
-                        prefixIcon: const Icon(Icons.email_outlined),
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: _emailError != null ? Colors.red : null,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                          borderSide: _emailError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: _emailError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: _emailError != null
+                                ? Colors.red
+                                : AppTheme.primary,
+                          ),
                         ),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: _emailError != null
+                            ? Colors.red.withValues(alpha: 0.05)
+                            : AppTheme.background,
+                        errorText: _emailError,
+                        errorStyle: const TextStyle(fontSize: 12),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -140,9 +248,17 @@ class _SignupScreenState extends State<SignupScreen> {
                     TextField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
+                      onChanged: (_) {
+                        if (_passwordError != null) {
+                          setState(() => _passwordError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: 'Create a password',
-                        prefixIcon: const Icon(Icons.lock_outline),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: _passwordError != null ? Colors.red : null,
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -157,19 +273,53 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                          borderSide: _passwordError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: _passwordError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: _passwordError != null
+                                ? Colors.red
+                                : AppTheme.primary,
+                          ),
                         ),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: _passwordError != null
+                            ? Colors.red.withValues(alpha: 0.05)
+                            : AppTheme.background,
+                        errorText: _passwordError,
+                        errorStyle: const TextStyle(fontSize: 12),
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      'I am a...',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
+                    Row(
+                      children: [
+                        const Text(
+                          'I am a...',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        if (_roleError != null) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            _roleError!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -180,9 +330,11 @@ class _SignupScreenState extends State<SignupScreen> {
                             label: 'Student',
                             description: 'Looking for experience',
                             isSelected: _selectedRole == UserRole.student,
+                            hasError: _roleError != null,
                             onTap: () {
                               setState(() {
                                 _selectedRole = UserRole.student;
+                                _roleError = null;
                               });
                             },
                           ),
@@ -194,9 +346,11 @@ class _SignupScreenState extends State<SignupScreen> {
                             label: 'Startup',
                             description: 'Looking to hire talent',
                             isSelected: _selectedRole == UserRole.startup,
+                            hasError: _roleError != null,
                             onTap: () {
                               setState(() {
                                 _selectedRole = UserRole.startup;
+                                _roleError = null;
                               });
                             },
                           ),
@@ -250,6 +404,7 @@ class _RoleOption extends StatelessWidget {
     required this.description,
     required this.isSelected,
     required this.onTap,
+    this.hasError = false,
   });
 
   final IconData icon;
@@ -257,6 +412,7 @@ class _RoleOption extends StatelessWidget {
   final String description;
   final bool isSelected;
   final VoidCallback onTap;
+  final bool hasError;
 
   @override
   Widget build(BuildContext context) {
@@ -271,7 +427,11 @@ class _RoleOption extends StatelessWidget {
               : AppTheme.background,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? AppTheme.primary : Colors.transparent,
+            color: isSelected
+                ? AppTheme.primary
+                : hasError
+                    ? Colors.red.withValues(alpha: 0.5)
+                    : Colors.transparent,
             width: 2,
           ),
         ),

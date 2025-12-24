@@ -16,6 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  String? _emailError;
+  String? _passwordError;
 
   @override
   void dispose() {
@@ -24,11 +26,45 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  bool _isValidEmail(String email) {
+    final emailRegex = RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    );
+    return emailRegex.hasMatch(email);
+  }
+
+  String? _validateEmail(String email) {
+    if (email.isEmpty) {
+      return 'Email is required';
+    }
+    if (!email.contains('@')) {
+      return 'Email must contain @';
+    }
+    if (!_isValidEmail(email)) {
+      return 'Please enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String password) {
+    if (password.isEmpty) {
+      return 'Password is required';
+    }
+    if (password.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+    return null;
+  }
+
   void _handleLogin() {
-    // For now, just navigate to role select
-    // In production, this would validate credentials
-    if (_emailController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
-      context.goNamed('roleSelect');
+    setState(() {
+      _emailError = _validateEmail(_emailController.text.trim());
+      _passwordError = _validatePassword(_passwordController.text);
+    });
+
+    if (_emailError == null && _passwordError == null) {
+      // Valid - proceed with login
+      context.goNamed('signup'); // For now, go to signup to create account
     }
   }
 
@@ -107,15 +143,43 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
+                      onChanged: (_) {
+                        if (_emailError != null) {
+                          setState(() => _emailError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: 'Enter your email',
-                        prefixIcon: const Icon(Icons.email_outlined),
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: _emailError != null ? Colors.red : null,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                          borderSide: _emailError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: _emailError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: _emailError != null
+                                ? Colors.red
+                                : AppTheme.primary,
+                          ),
                         ),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: _emailError != null
+                            ? Colors.red.withValues(alpha: 0.05)
+                            : AppTheme.background,
+                        errorText: _emailError,
+                        errorStyle: const TextStyle(fontSize: 12),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -130,9 +194,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
+                      onChanged: (_) {
+                        if (_passwordError != null) {
+                          setState(() => _passwordError = null);
+                        }
+                      },
                       decoration: InputDecoration(
                         hintText: 'Enter your password',
-                        prefixIcon: const Icon(Icons.lock_outline),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: _passwordError != null ? Colors.red : null,
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -147,10 +219,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide.none,
+                          borderSide: _passwordError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: _passwordError != null
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(
+                            color: _passwordError != null
+                                ? Colors.red
+                                : AppTheme.primary,
+                          ),
                         ),
                         filled: true,
-                        fillColor: AppTheme.background,
+                        fillColor: _passwordError != null
+                            ? Colors.red.withValues(alpha: 0.05)
+                            : AppTheme.background,
+                        errorText: _passwordError,
+                        errorStyle: const TextStyle(fontSize: 12),
                       ),
                     ),
                     const SizedBox(height: 12),
