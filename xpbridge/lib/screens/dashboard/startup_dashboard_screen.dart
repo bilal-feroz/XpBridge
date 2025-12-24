@@ -59,8 +59,8 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
         child: Column(
           children: [
             XPAppBar(
-              title: 'Welcome, ${startupProfile?.companyName ?? "Startup"}',
-              subtitle: 'Post 2-5 hour micro-projects for UAE youth',
+              title: 'Discover Students',
+              subtitle: 'Find talented youth for your micro-projects',
               showBack: false,
               trailing: IconButton(
                 onPressed: () => context.pushNamed('startupProfile'),
@@ -85,41 +85,7 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: XPCard(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'Why XPBridge for startups',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    _StartupBullet(
-                      text:
-                          'Bridge education and the future workforce with short, learning-first tasks instead of employment contracts.',
-                    ),
-                    _StartupBullet(
-                      text:
-                          'Built for UAE compliance: age-safe, time-limited, mentor-reviewed projects for 15-22 year olds.',
-                    ),
-                    _StartupBullet(
-                      text:
-                          'Students deliver portfolio-ready proof; you give feedback, badges, and early mentorship.',
-                    ),
-                    _StartupBullet(
-                      text:
-                          'Match by skills and interest to quickly evaluate talent and build your pipeline.',
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            const SizedBox(height: 8),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
@@ -663,35 +629,6 @@ class _ApplicationCard extends StatelessWidget {
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
-  }
-}
-
-class _StartupBullet extends StatelessWidget {
-  const _StartupBullet({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 4),
-            child: Icon(Icons.check_circle, size: 16, color: AppTheme.primary),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 13, height: 1.35),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

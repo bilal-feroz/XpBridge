@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app.dart';
 import '../../data/dummy_data.dart';
@@ -313,11 +314,14 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                 icon: Icons.arrow_forward_rounded,
                 onPressed:
                     (_nameController.text.isNotEmpty && _skills.length >= 2)
-                    ? () {
+                    ? () async {
+                        final prefs = await SharedPreferences.getInstance();
+                        final email = prefs.getString('user_email') ?? '';
+
                         final profile = StudentProfile(
                           id: 'user_${DateTime.now().millisecondsSinceEpoch}',
                           name: _nameController.text,
-                          email: '', // Would come from auth
+                          email: email,
                           bio: _bioController.text.isNotEmpty
                               ? _bioController.text
                               : null,
@@ -331,6 +335,15 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                               : null,
                           createdAt: DateTime.now(),
                         );
+
+                        // Save profile data to shared_preferences
+                        await prefs.setString('profile_name', _nameController.text);
+                        await prefs.setString('profile_bio', _bioController.text);
+                        await prefs.setString('profile_education', _educationController.text);
+                        await prefs.setStringList('profile_skills', _skills.toList());
+                        await prefs.setDouble('profile_hours', _hours);
+
+                        if (!context.mounted) return;
                         appState.saveStudentProfile(profile);
                         context.goNamed('studentDashboard');
                       }

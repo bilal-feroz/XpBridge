@@ -10,6 +10,8 @@ import '../screens/details/startup_detail_screen.dart';
 import '../screens/details/student_detail_screen.dart';
 import '../screens/onboarding/startup_setup_screen.dart';
 import '../screens/onboarding/student_setup_screen.dart';
+import '../screens/profile/startup_profile_screen.dart';
+import '../screens/profile/student_profile_screen.dart';
 import '../screens/splash/splash_screen.dart';
 
 class AppRouter {
@@ -76,7 +78,7 @@ class AppRouter {
         name: 'studentProfile',
         path: '/student/profile',
         pageBuilder: (context, state) =>
-            _slide(const _PlaceholderScreen(title: 'My Profile')),
+            _slide(const StudentProfileScreen()),
       ),
 
       // Startup Flow
@@ -102,7 +104,7 @@ class AppRouter {
         name: 'startupProfile',
         path: '/startup/profile',
         pageBuilder: (context, state) =>
-            _slide(const _PlaceholderScreen(title: 'Company Profile')),
+            _slide(const StartupProfileScreen()),
       ),
     ],
   );

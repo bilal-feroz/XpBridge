@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app.dart';
 import '../../theme/app_theme.dart';
@@ -73,7 +74,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return null;
   }
 
-  void _handleSignup() {
+  Future<void> _handleSignup() async {
     setState(() {
       _nameError = _validateName(_nameController.text.trim());
       _emailError = _validateEmail(_emailController.text.trim());
@@ -85,6 +86,15 @@ class _SignupScreenState extends State<SignupScreen> {
         _emailError == null &&
         _passwordError == null &&
         _roleError == null) {
+      // Save user data locally
+      final prefs = await SharedPreferences.getInstance();
+      final email = _emailController.text.trim().toLowerCase();
+      await prefs.setString('user_email', email);
+      await prefs.setString('user_name', _nameController.text.trim());
+      await prefs.setString('user_role', _selectedRole == UserRole.student ? 'student' : 'startup');
+
+      if (!mounted) return;
+
       final appState = AppStateScope.of(context);
       appState.login(role: _selectedRole!);
 

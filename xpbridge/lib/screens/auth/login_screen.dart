@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../app.dart';
+import '../../models/student_profile.dart';
+import '../../models/startup_profile.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/xp_button.dart';
 import '../../widgets/xp_card.dart';
@@ -56,15 +60,65 @@ class _LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
-  void _handleLogin() {
+  Future<void> _handleLogin() async {
     setState(() {
       _emailError = _validateEmail(_emailController.text.trim());
       _passwordError = _validatePassword(_passwordController.text);
     });
 
     if (_emailError == null && _passwordError == null) {
-      // Valid - proceed with login
-      context.goNamed('signup'); // For now, go to signup to create account
+      final prefs = await SharedPreferences.getInstance();
+      final savedEmail = prefs.getString('user_email');
+      final savedRole = prefs.getString('user_role');
+      final enteredEmail = _emailController.text.trim().toLowerCase();
+
+      if (savedEmail == null || savedEmail != enteredEmail) {
+        setState(() {
+          _emailError = 'Account not found. Please sign up first.';
+        });
+        return;
+      }
+
+      if (!mounted) return;
+
+      final appState = AppStateScope.of(context);
+      final role = savedRole == 'student' ? UserRole.student : UserRole.startup;
+      appState.login(role: role);
+
+      // Restore profile data from shared_preferences
+      if (role == UserRole.student) {
+        final name = prefs.getString('profile_name');
+        if (name != null && name.isNotEmpty) {
+          final profile = StudentProfile(
+            id: 'user_restored',
+            name: name,
+            email: savedEmail,
+            bio: prefs.getString('profile_bio'),
+            education: prefs.getString('profile_education'),
+            skills: prefs.getStringList('profile_skills') ?? [],
+            availabilityHours: prefs.getDouble('profile_hours') ?? 10,
+            createdAt: DateTime.now(),
+          );
+          appState.saveStudentProfile(profile);
+        }
+        context.goNamed('studentDashboard');
+      } else {
+        final companyName = prefs.getString('startup_name');
+        if (companyName != null && companyName.isNotEmpty) {
+          final profile = StartupProfile(
+            id: 'startup_restored',
+            companyName: companyName,
+            email: savedEmail,
+            description: prefs.getString('startup_description') ?? '',
+            industry: prefs.getString('startup_industry') ?? '',
+            requiredSkills: prefs.getStringList('startup_skills') ?? [],
+            projectDetails: prefs.getString('startup_project'),
+            createdAt: DateTime.now(),
+          );
+          appState.saveStartupProfile(profile);
+        }
+        context.goNamed('startupDashboard');
+      }
     }
   }
 
