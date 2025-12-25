@@ -541,6 +541,17 @@ class _ApplicationCard extends StatelessWidget {
                           fontSize: 15,
                         ),
                       ),
+                      if (application.roleTitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          application.roleTitle!,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      ],
                       Text(
                         'Applied ${_formatDate(application.appliedAt)}',
                         style: TextStyle(

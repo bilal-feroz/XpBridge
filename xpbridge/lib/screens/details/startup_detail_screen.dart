@@ -4,6 +4,7 @@ import '../../app.dart';
 import '../../data/dummy_data.dart';
 import '../../models/application.dart';
 import '../../models/startup_profile.dart';
+import '../../models/startup_role.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/xp_app_bar.dart';
 import '../../widgets/xp_button.dart';
@@ -21,6 +22,7 @@ class StartupDetailScreen extends StatefulWidget {
 class _StartupDetailScreenState extends State<StartupDetailScreen> {
   final _messageController = TextEditingController();
   bool _hasApplied = false;
+  final Set<String> _appliedRoleTitles = {};
 
   StartupProfile? get _startup {
     try {
@@ -36,7 +38,8 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
     super.dispose();
   }
 
-  void _showApplyDialog(BuildContext context) {
+  void _showApplyDialog(BuildContext context, {StartupRole? role}) {
+    final roleTitle = role?.title;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -66,24 +69,61 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              Text(
-                'Apply to ${_startup?.companyName}',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Write a brief message to introduce yourself.',
-                style: TextStyle(color: Colors.black.withValues(alpha: 0.6)),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          roleTitle != null
+                              ? 'Apply for $roleTitle'
+                              : 'Apply to ${_startup?.companyName}',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          roleTitle != null
+                              ? 'Tell the team why you are a fit for $roleTitle.'
+                              : 'Write a brief message to introduce yourself.',
+                          style: TextStyle(
+                            color: Colors.black.withValues(alpha: 0.6),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (roleTitle != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        _startup?.companyName ?? '',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.primary,
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _messageController,
                 maxLines: 4,
                 decoration: InputDecoration(
-                  hintText: 'Why are you interested in this opportunity?',
+                  hintText: roleTitle != null
+                      ? 'Why are you excited about $roleTitle?'
+                      : 'Why are you interested in this opportunity?',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
@@ -107,6 +147,7 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                       startupId: _startup!.id,
                       studentName: student.name,
                       startupName: _startup!.companyName,
+                      roleTitle: roleTitle,
                       status: ApplicationStatus.pending,
                       message: _messageController.text.isNotEmpty
                           ? _messageController.text
@@ -114,11 +155,22 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                       appliedAt: DateTime.now(),
                     );
                     appState.addApplication(application);
-                    setState(() => _hasApplied = true);
+                    setState(() {
+                      if (roleTitle != null) {
+                        _appliedRoleTitles.add(roleTitle);
+                      } else {
+                        _hasApplied = true;
+                      }
+                    });
+                    _messageController.clear();
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Applied to ${_startup!.companyName}!'),
+                        content: Text(
+                          roleTitle != null
+                              ? 'Applied for $roleTitle at ${_startup!.companyName}!'
+                              : 'Applied to ${_startup!.companyName}!',
+                        ),
                         backgroundColor: Colors.green,
                       ),
                     );
@@ -156,6 +208,14 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
     final matchingSkills = startup.requiredSkills
         .where((skill) => studentSkills.contains(skill))
         .toList();
+    StartupRole? nextRoleToApply;
+    for (final role in startup.openRoles) {
+      if (!_appliedRoleTitles.contains(role.title)) {
+        nextRoleToApply = role;
+        break;
+      }
+    }
+    final roleCta = nextRoleToApply;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -312,6 +372,105 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                     ],
+                    if (startup.openRoles.isNotEmpty) ...[
+                      const Text(
+                        'Open Roles',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Column(
+                        children: startup.openRoles.map((role) {
+                          final alreadyApplied =
+                              _appliedRoleTitles.contains(role.title);
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: XPCard(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              role.title,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            if (role.commitment != null) ...[
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                role.commitment!,
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Colors.black.withValues(
+                                                    alpha: 0.6,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ],
+                                        ),
+                                      ),
+                                      TextButton.icon(
+                                        onPressed: alreadyApplied
+                                            ? null
+                                            : () => _showApplyDialog(
+                                                  context,
+                                                  role: role,
+                                                ),
+                                        icon: Icon(
+                                          alreadyApplied
+                                              ? Icons.check_circle
+                                              : Icons.send_rounded,
+                                          color: alreadyApplied
+                                              ? Colors.green
+                                              : AppTheme.primary,
+                                        ),
+                                        label: Text(
+                                          alreadyApplied ? 'Applied' : 'Apply',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            color: alreadyApplied
+                                                ? Colors.green
+                                                : AppTheme.primary,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (role.description?.isNotEmpty == true) ...[
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      role.description!,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        height: 1.5,
+                                        color: Colors.black.withValues(
+                                          alpha: 0.7,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
                     const Text(
                       'Skills They Need',
                       style: TextStyle(
@@ -410,9 +569,24 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
         ),
         child: SafeArea(
           child: XPButton(
-            label: _hasApplied ? 'Application Sent!' : 'Apply Now',
-            icon: _hasApplied ? Icons.check_circle : Icons.send_rounded,
-            onPressed: _hasApplied ? null : () => _showApplyDialog(context),
+            label: startup.openRoles.isNotEmpty
+                ? (roleCta != null
+                    ? 'Apply for ${roleCta.title}'
+                    : 'Applications Sent')
+                : (_hasApplied ? 'Application Sent!' : 'Apply Now'),
+            icon: startup.openRoles.isNotEmpty
+                ? (roleCta != null
+                    ? Icons.work_outline
+                    : Icons.check_circle)
+                : (_hasApplied ? Icons.check_circle : Icons.send_rounded),
+            onPressed: startup.openRoles.isNotEmpty
+                ? (roleCta != null
+                    ? () => _showApplyDialog(
+                          context,
+                          role: roleCta,
+                        )
+                    : null)
+                : (_hasApplied ? null : () => _showApplyDialog(context)),
           ),
         ),
       ),

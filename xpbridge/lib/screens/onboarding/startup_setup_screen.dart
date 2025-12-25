@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -5,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../app.dart';
 import '../../data/dummy_data.dart';
 import '../../models/startup_profile.dart';
+import '../../models/startup_role.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/xp_button.dart';
 import '../../widgets/xp_card.dart';
@@ -23,8 +26,12 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
   final _descriptionController = TextEditingController();
   final _projectDetailsController = TextEditingController();
   final _websiteController = TextEditingController();
+  final _roleTitleController = TextEditingController();
+  final _roleCommitmentController = TextEditingController();
+  final _roleDescriptionController = TextEditingController();
   String? _selectedIndustry;
   final Set<String> _requiredSkills = {};
+  final List<StartupRole> _openRoles = [];
 
   @override
   void initState() {
@@ -38,7 +45,33 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
     _descriptionController.dispose();
     _projectDetailsController.dispose();
     _websiteController.dispose();
+    _roleTitleController.dispose();
+    _roleCommitmentController.dispose();
+    _roleDescriptionController.dispose();
     super.dispose();
+  }
+
+  void _addRole() {
+    final title = _roleTitleController.text.trim();
+    final commitment = _roleCommitmentController.text.trim();
+    final description = _roleDescriptionController.text.trim();
+
+    if (title.isEmpty) {
+      return;
+    }
+
+    final role = StartupRole(
+      title: title,
+      commitment: commitment.isNotEmpty ? commitment : null,
+      description: description.isNotEmpty ? description : null,
+    );
+
+    setState(() {
+      _openRoles.add(role);
+      _roleTitleController.clear();
+      _roleCommitmentController.clear();
+      _roleDescriptionController.clear();
+    });
   }
 
   @override
@@ -200,6 +233,168 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                         ),
                       ),
                       const SizedBox(height: 22),
+                      const XPSectionTitle(title: 'Open Roles (optional)'),
+                      const SizedBox(height: 10),
+                      XPCard(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: _roleTitleController,
+                              decoration: InputDecoration(
+                                labelText: 'Role title',
+                                hintText: 'e.g. Product Design Intern',
+                                prefixIcon: const Icon(Icons.work_outline),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: AppTheme.background,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextField(
+                              controller: _roleCommitmentController,
+                              decoration: InputDecoration(
+                                labelText: 'Commitment (optional)',
+                                hintText: '10-12 hrs/week • Remote',
+                                prefixIcon: const Icon(Icons.schedule),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: AppTheme.background,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextField(
+                              controller: _roleDescriptionController,
+                              maxLines: 3,
+                              decoration: InputDecoration(
+                                labelText: 'What will they do? (optional)',
+                                hintText:
+                                    'Briefly describe the responsibilities or outcomes.',
+                                prefixIcon: const Padding(
+                                  padding: EdgeInsets.only(bottom: 48),
+                                  child: Icon(Icons.description_outlined),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide.none,
+                                ),
+                                filled: true,
+                                fillColor: AppTheme.background,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: ElevatedButton.icon(
+                                onPressed: _addRole,
+                                icon: const Icon(Icons.add),
+                                label: const Text('Add role'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.primary,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (_openRoles.isEmpty)
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    'List the roles you want students to apply to.',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color:
+                                          Colors.black.withValues(alpha: 0.5),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      if (_openRoles.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Column(
+                          children: _openRoles.map((role) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: XPCard(
+                                padding: const EdgeInsets.all(14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.work_outline,
+                                          size: 18,
+                                          color: AppTheme.primary,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            role.title,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _openRoles.removeWhere(
+                                              (r) => r.title == role.title,
+                                            );
+                                          });
+                                        },
+                                        icon: const Icon(
+                                          Icons.delete_outline,
+                                          color: Colors.redAccent,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                    if (role.commitment != null) ...[
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        role.commitment!,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color:
+                                              Colors.black.withValues(alpha: 0.6),
+                                        ),
+                                      ),
+                                    ],
+                                    if (role.description?.isNotEmpty == true) ...[
+                                      const SizedBox(height: 6),
+                                      Text(
+                                        role.description!,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          height: 1.4,
+                                          color:
+                                              Colors.black.withValues(alpha: 0.7),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                      const SizedBox(height: 22),
                       const XPSectionTitle(title: 'Preview'),
                       const SizedBox(height: 8),
                       XPCard(
@@ -352,6 +547,7 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                           description: _descriptionController.text,
                           industry: _selectedIndustry!,
                           requiredSkills: _requiredSkills.toList(),
+                          openRoles: _openRoles.toList(),
                           websiteUrl: _websiteController.text.isNotEmpty
                               ? _websiteController.text
                               : null,
@@ -368,6 +564,12 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                         await prefs.setString('startup_industry', _selectedIndustry!);
                         await prefs.setStringList('startup_skills', _requiredSkills.toList());
                         await prefs.setString('startup_project', _projectDetailsController.text);
+                        await prefs.setString(
+                          'startup_roles',
+                          jsonEncode(
+                            _openRoles.map((role) => role.toMap()).toList(),
+                          ),
+                        );
 
                         if (!context.mounted) return;
                         appState.saveStartupProfile(profile);

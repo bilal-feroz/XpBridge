@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -5,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../app.dart';
 import '../../models/student_profile.dart';
 import '../../models/startup_profile.dart';
+import '../../models/startup_role.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/xp_button.dart';
 import '../../widgets/xp_card.dart';
@@ -105,6 +108,17 @@ class _LoginScreenState extends State<LoginScreen> {
       } else {
         final companyName = prefs.getString('startup_name');
         if (companyName != null && companyName.isNotEmpty) {
+          final storedRoles = prefs.getString('startup_roles');
+          final roles = storedRoles != null && storedRoles.isNotEmpty
+              ? (jsonDecode(storedRoles) as List<dynamic>)
+                  .map(
+                    (item) => StartupRole.fromMap(
+                      Map<String, dynamic>.from(item as Map),
+                    ),
+                  )
+                  .where((role) => role.title.isNotEmpty)
+                  .toList()
+              : <StartupRole>[];
           final profile = StartupProfile(
             id: 'startup_restored',
             companyName: companyName,
@@ -112,6 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
             description: prefs.getString('startup_description') ?? '',
             industry: prefs.getString('startup_industry') ?? '',
             requiredSkills: prefs.getStringList('startup_skills') ?? [],
+            openRoles: roles,
             projectDetails: prefs.getString('startup_project'),
             createdAt: DateTime.now(),
           );

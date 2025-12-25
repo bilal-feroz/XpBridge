@@ -1,3 +1,5 @@
+import 'startup_role.dart';
+
 class StartupProfile {
   final String id;
   final String companyName;
@@ -6,6 +8,7 @@ class StartupProfile {
   final String description;
   final String industry;
   final List<String> requiredSkills;
+  final List<StartupRole> openRoles;
   final String? websiteUrl;
   final String? logoUrl;
   final String? projectDetails;
@@ -19,6 +22,7 @@ class StartupProfile {
     required this.description,
     required this.industry,
     required this.requiredSkills,
+    this.openRoles = const [],
     this.websiteUrl,
     this.logoUrl,
     this.projectDetails,
@@ -33,6 +37,7 @@ class StartupProfile {
     String? description,
     String? industry,
     List<String>? requiredSkills,
+    List<StartupRole>? openRoles,
     String? websiteUrl,
     String? logoUrl,
     String? projectDetails,
@@ -46,6 +51,7 @@ class StartupProfile {
       description: description ?? this.description,
       industry: industry ?? this.industry,
       requiredSkills: requiredSkills ?? this.requiredSkills,
+      openRoles: openRoles ?? this.openRoles,
       websiteUrl: websiteUrl ?? this.websiteUrl,
       logoUrl: logoUrl ?? this.logoUrl,
       projectDetails: projectDetails ?? this.projectDetails,

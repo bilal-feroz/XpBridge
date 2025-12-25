@@ -6,6 +6,7 @@ class Application {
   final String startupId;
   final String studentName;
   final String startupName;
+  final String? roleTitle;
   final ApplicationStatus status;
   final String? message;
   final DateTime appliedAt;
@@ -17,6 +18,7 @@ class Application {
     required this.startupId,
     required this.studentName,
     required this.startupName,
+    this.roleTitle,
     required this.status,
     this.message,
     required this.appliedAt,
@@ -29,6 +31,7 @@ class Application {
     String? startupId,
     String? studentName,
     String? startupName,
+    String? roleTitle,
     ApplicationStatus? status,
     String? message,
     DateTime? appliedAt,
@@ -40,6 +43,7 @@ class Application {
       startupId: startupId ?? this.startupId,
       studentName: studentName ?? this.studentName,
       startupName: startupName ?? this.startupName,
+      roleTitle: roleTitle ?? this.roleTitle,
       status: status ?? this.status,
       message: message ?? this.message,
       appliedAt: appliedAt ?? this.appliedAt,
