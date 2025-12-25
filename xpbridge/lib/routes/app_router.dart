@@ -12,6 +12,7 @@ import '../screens/onboarding/startup_setup_screen.dart';
 import '../screens/onboarding/student_setup_screen.dart';
 import '../screens/profile/startup_profile_screen.dart';
 import '../screens/profile/student_profile_screen.dart';
+import '../screens/onboarding/intro_screen.dart';
 import '../screens/splash/splash_screen.dart';
 
 class AppRouter {
@@ -28,6 +29,13 @@ class AppRouter {
         name: 'splash',
         path: '/',
         pageBuilder: (context, state) => _fade(const SplashScreen()),
+      ),
+
+      // Intro/Onboarding
+      GoRoute(
+        name: 'intro',
+        path: '/intro',
+        pageBuilder: (context, state) => _fade(const IntroScreen()),
       ),
 
       // Auth

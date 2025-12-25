@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../theme/app_theme.dart';
 
@@ -24,9 +25,23 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 900),
     )..forward();
 
-    Timer(const Duration(seconds: 1), () {
-      if (mounted) context.goNamed('login');
-    });
+    _navigateAfterSplash();
+  }
+
+  Future<void> _navigateAfterSplash() async {
+    await Future.delayed(const Duration(seconds: 1));
+    if (!mounted) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    final onboardingComplete = prefs.getBool('onboarding_complete') ?? false;
+
+    if (!mounted) return;
+
+    if (onboardingComplete) {
+      context.goNamed('login');
+    } else {
+      context.goNamed('intro');
+    }
   }
 
   @override
