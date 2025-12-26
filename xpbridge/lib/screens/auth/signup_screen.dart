@@ -86,12 +86,14 @@ class _SignupScreenState extends State<SignupScreen> {
         _emailError == null &&
         _passwordError == null &&
         _roleError == null) {
-      // Save user data locally
-      final prefs = await SharedPreferences.getInstance();
       final email = _emailController.text.trim().toLowerCase();
+      final name = _nameController.text.trim();
+      final role = _selectedRole == UserRole.student ? 'student' : 'startup';
+
+      final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_email', email);
-      await prefs.setString('user_name', _nameController.text.trim());
-      await prefs.setString('user_role', _selectedRole == UserRole.student ? 'student' : 'startup');
+      await prefs.setString('user_name', name);
+      await prefs.setString('user_role', role);
 
       if (!mounted) return;
 
@@ -112,317 +114,315 @@ class _SignupScreenState extends State<SignupScreen> {
       backgroundColor: AppTheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              IconButton(
-                onPressed: () => context.pop(),
-                icon: const Icon(Icons.arrow_back_rounded),
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding: const EdgeInsets.all(12),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Back button
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardBackground,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    onPressed: () => context.goNamed('login'),
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: AppTheme.text,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Create Account',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+                const SizedBox(height: 24),
+                // Header
+                const Text(
+                  'Create Account',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: AppTheme.text,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Join XPBridge to earn real experience through short UAE-safe missions',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.black.withValues(alpha: 0.6),
+                const SizedBox(height: 8),
+                Text(
+                  'Join XPBridge and start your journey',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppTheme.textSecondary,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32),
-              XPCard(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 32),
+                // Role selection
+                const Text(
+                  'I am a...',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.text,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
                   children: [
-                    const Text(
-                      'Full Name',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
+                    Expanded(
+                      child: _RoleCard(
+                        title: 'Student',
+                        subtitle: 'Looking to learn & grow',
+                        icon: Icons.school_rounded,
+                        isSelected: _selectedRole == UserRole.student,
+                        onTap: () {
+                          setState(() {
+                            _selectedRole = UserRole.student;
+                            _roleError = null;
+                          });
+                        },
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _nameController,
-                      textCapitalization: TextCapitalization.words,
-                      onChanged: (_) {
-                        if (_nameError != null) {
-                          setState(() => _nameError = null);
-                        }
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Enter your name',
-                        prefixIcon: Icon(
-                          Icons.person_outline,
-                          color: _nameError != null ? Colors.red : null,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: _nameError != null
-                              ? const BorderSide(color: Colors.red)
-                              : BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: _nameError != null
-                              ? const BorderSide(color: Colors.red)
-                              : BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(
-                            color: _nameError != null
-                                ? Colors.red
-                                : AppTheme.primary,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: _nameError != null
-                            ? Colors.red.withValues(alpha: 0.05)
-                            : AppTheme.background,
-                        errorText: _nameError,
-                        errorStyle: const TextStyle(fontSize: 12),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _RoleCard(
+                        title: 'Startup',
+                        subtitle: 'Looking for talent',
+                        icon: Icons.rocket_launch_rounded,
+                        isSelected: _selectedRole == UserRole.startup,
+                        onTap: () {
+                          setState(() {
+                            _selectedRole = UserRole.startup;
+                            _roleError = null;
+                          });
+                        },
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Email',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      onChanged: (_) {
-                        if (_emailError != null) {
-                          setState(() => _emailError = null);
-                        }
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Enter your email',
-                        prefixIcon: Icon(
-                          Icons.email_outlined,
-                          color: _emailError != null ? Colors.red : null,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: _emailError != null
-                              ? const BorderSide(color: Colors.red)
-                              : BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: _emailError != null
-                              ? const BorderSide(color: Colors.red)
-                              : BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(
-                            color: _emailError != null
-                                ? Colors.red
-                                : AppTheme.primary,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: _emailError != null
-                            ? Colors.red.withValues(alpha: 0.05)
-                            : AppTheme.background,
-                        errorText: _emailError,
-                        errorStyle: const TextStyle(fontSize: 12),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      'Password',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      onChanged: (_) {
-                        if (_passwordError != null) {
-                          setState(() => _passwordError = null);
-                        }
-                      },
-                      decoration: InputDecoration(
-                        hintText: 'Create a password',
-                        prefixIcon: Icon(
-                          Icons.lock_outline,
-                          color: _passwordError != null ? Colors.red : null,
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: _passwordError != null
-                              ? const BorderSide(color: Colors.red)
-                              : BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: _passwordError != null
-                              ? const BorderSide(color: Colors.red)
-                              : BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(
-                            color: _passwordError != null
-                                ? Colors.red
-                                : AppTheme.primary,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: _passwordError != null
-                            ? Colors.red.withValues(alpha: 0.05)
-                            : AppTheme.background,
-                        errorText: _passwordError,
-                        errorStyle: const TextStyle(fontSize: 12),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        const Text(
-                          'I am a...',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        ),
-                        if (_roleError != null) ...[
-                          const SizedBox(width: 8),
-                          Text(
-                            _roleError!,
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _RoleOption(
-                            icon: Icons.school_rounded,
-                            label: 'Student',
-                            description: 'Looking for experience',
-                            isSelected: _selectedRole == UserRole.student,
-                            hasError: _roleError != null,
-                            onTap: () {
-                              setState(() {
-                                _selectedRole = UserRole.student;
-                                _roleError = null;
-                              });
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _RoleOption(
-                            icon: Icons.rocket_launch_rounded,
-                            label: 'Startup',
-                            description: 'Looking to hire talent',
-                            isSelected: _selectedRole == UserRole.startup,
-                            hasError: _roleError != null,
-                            onTap: () {
-                              setState(() {
-                                _selectedRole = UserRole.startup;
-                                _roleError = null;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 28),
-                    XPButton(
-                      label: 'Create Account',
-                      icon: Icons.arrow_forward_rounded,
-                      onPressed: _handleSignup,
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                if (_roleError != null) ...[
+                  const SizedBox(height: 8),
                   Text(
-                    'Already have an account? ',
+                    _roleError!,
                     style: TextStyle(
-                      color: Colors.black.withValues(alpha: 0.6),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => context.goNamed('login'),
-                    child: Text(
-                      'Sign In',
-                      style: TextStyle(
-                        color: AppTheme.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      color: AppTheme.error,
+                      fontSize: 12,
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 20),
-            ],
+                const SizedBox(height: 28),
+                // Form
+                XPCard(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildTextField(
+                        label: 'Full Name',
+                        controller: _nameController,
+                        icon: Icons.person_outline,
+                        hint: 'Enter your name',
+                        error: _nameError,
+                        onChanged: () {
+                          if (_nameError != null) {
+                            setState(() => _nameError = null);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      _buildTextField(
+                        label: 'Email',
+                        controller: _emailController,
+                        icon: Icons.email_outlined,
+                        hint: 'Enter your email',
+                        error: _emailError,
+                        keyboardType: TextInputType.emailAddress,
+                        onChanged: () {
+                          if (_emailError != null) {
+                            setState(() => _emailError = null);
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        'Password',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: AppTheme.text,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _passwordController,
+                        obscureText: _obscurePassword,
+                        onChanged: (_) {
+                          if (_passwordError != null) {
+                            setState(() => _passwordError = null);
+                          }
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Create a password',
+                          prefixIcon: Icon(
+                            Icons.lock_outline,
+                            color: _passwordError != null
+                                ? AppTheme.error
+                                : AppTheme.textMuted,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                              color: AppTheme.textMuted,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
+                          ),
+                          filled: true,
+                          fillColor: _passwordError != null
+                              ? AppTheme.error.withValues(alpha: 0.05)
+                              : AppTheme.cardBackground,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: _passwordError != null
+                                ? BorderSide(color: AppTheme.error)
+                                : BorderSide.none,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: _passwordError != null
+                                ? BorderSide(color: AppTheme.error)
+                                : BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide(
+                              color: _passwordError != null
+                                  ? AppTheme.error
+                                  : AppTheme.primary,
+                              width: 2,
+                            ),
+                          ),
+                          errorText: _passwordError,
+                          errorStyle: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      XPButton(
+                        label: 'Create Account',
+                        icon: Icons.arrow_forward_rounded,
+                        onPressed: _handleSignup,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Login link
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account? ',
+                        style: TextStyle(
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () => context.goNamed('login'),
+                        child: const Text(
+                          'Sign In',
+                          style: TextStyle(
+                            color: AppTheme.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  Widget _buildTextField({
+    required String label,
+    required TextEditingController controller,
+    required IconData icon,
+    required String hint,
+    String? error,
+    TextInputType? keyboardType,
+    required VoidCallback onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            color: AppTheme.text,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          onChanged: (_) => onChanged(),
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(
+              icon,
+              color: error != null ? AppTheme.error : AppTheme.textMuted,
+            ),
+            filled: true,
+            fillColor: error != null
+                ? AppTheme.error.withValues(alpha: 0.05)
+                : AppTheme.cardBackground,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide:
+                  error != null ? BorderSide(color: AppTheme.error) : BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide:
+                  error != null ? BorderSide(color: AppTheme.error) : BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: error != null ? AppTheme.error : AppTheme.primary,
+                width: 2,
+              ),
+            ),
+            errorText: error,
+            errorStyle: const TextStyle(fontSize: 12),
+          ),
+        ),
+      ],
+    );
+  }
 }
 
-class _RoleOption extends StatelessWidget {
-  const _RoleOption({
+class _RoleCard extends StatelessWidget {
+  const _RoleCard({
+    required this.title,
+    required this.subtitle,
     required this.icon,
-    required this.label,
-    required this.description,
     required this.isSelected,
     required this.onTap,
-    this.hasError = false,
   });
 
+  final String title;
+  final String subtitle;
   final IconData icon;
-  final String label;
-  final String description;
   final bool isSelected;
   final VoidCallback onTap;
-  final bool hasError;
 
   @override
   Widget build(BuildContext context) {
@@ -432,51 +432,50 @@ class _RoleOption extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.primary.withValues(alpha: 0.1)
-              : AppTheme.background,
+          color: isSelected ? AppTheme.primary.withValues(alpha: 0.08) : AppTheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected
-                ? AppTheme.primary
-                : hasError
-                    ? Colors.red.withValues(alpha: 0.5)
-                    : Colors.transparent,
+            color: isSelected ? AppTheme.primary : AppTheme.cardBackground,
             width: 2,
           ),
+          boxShadow: isSelected ? AppTheme.cardShadow : null,
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: isSelected
-                    ? AppTheme.primary.withValues(alpha: 0.15)
-                    : Colors.white,
+                gradient: isSelected
+                    ? LinearGradient(
+                        colors: [AppTheme.primary, AppTheme.primaryDark],
+                      )
+                    : null,
+                color: isSelected ? null : AppTheme.cardBackground,
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
-                color: isSelected ? AppTheme.primary : Colors.black54,
+                color: isSelected ? Colors.white : AppTheme.textSecondary,
                 size: 24,
               ),
             ),
             const SizedBox(height: 12),
             Text(
-              label,
+              title,
               style: TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isSelected ? AppTheme.primary : Colors.black87,
+                color: isSelected ? AppTheme.primary : AppTheme.text,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              description,
-              textAlign: TextAlign.center,
+              subtitle,
               style: TextStyle(
-                fontSize: 11,
-                color: Colors.black.withValues(alpha: 0.5),
+                fontSize: 12,
+                color: AppTheme.textSecondary,
               ),
             ),
           ],

@@ -29,6 +29,9 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
   final _roleTitleController = TextEditingController();
   final _roleCommitmentController = TextEditingController();
   final _roleDescriptionController = TextEditingController();
+  final _roleOutcomeController = TextEditingController();
+  final _roleHoursController = TextEditingController();
+  final _roleDurationController = TextEditingController();
   String? _selectedIndustry;
   final Set<String> _requiredSkills = {};
   final List<StartupRole> _openRoles = [];
@@ -48,6 +51,9 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
     _roleTitleController.dispose();
     _roleCommitmentController.dispose();
     _roleDescriptionController.dispose();
+    _roleOutcomeController.dispose();
+    _roleHoursController.dispose();
+    _roleDurationController.dispose();
     super.dispose();
   }
 
@@ -55,8 +61,11 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
     final title = _roleTitleController.text.trim();
     final commitment = _roleCommitmentController.text.trim();
     final description = _roleDescriptionController.text.trim();
+    final outcome = _roleOutcomeController.text.trim();
+    final estimatedHours = int.tryParse(_roleHoursController.text.trim());
+    final durationWeeks = int.tryParse(_roleDurationController.text.trim());
 
-    if (title.isEmpty) {
+    if (title.isEmpty || outcome.isEmpty) {
       return;
     }
 
@@ -64,6 +73,9 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
       title: title,
       commitment: commitment.isNotEmpty ? commitment : null,
       description: description.isNotEmpty ? description : null,
+      learningOutcome: outcome,
+      estimatedHours: estimatedHours,
+      durationWeeks: durationWeeks,
     );
 
     setState(() {
@@ -71,6 +83,9 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
       _roleTitleController.clear();
       _roleCommitmentController.clear();
       _roleDescriptionController.clear();
+      _roleOutcomeController.clear();
+      _roleHoursController.clear();
+      _roleDurationController.clear();
     });
   }
 
@@ -87,20 +102,56 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Set up your company',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+              // Header with gradient accent
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [AppTheme.primary, AppTheme.primaryDark],
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primary.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.business,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Set up your company',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.text,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Help students learn about you',
+                          style: TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                'Help students learn about your startup.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
-              ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 20),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -124,7 +175,7 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -143,7 +194,7 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -159,7 +210,7 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
                           ],
@@ -228,7 +279,7 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                               borderSide: BorderSide.none,
                             ),
                             filled: true,
-                            fillColor: AppTheme.background,
+                            fillColor: AppTheme.cardBackground,
                           ),
                         ),
                       ),
@@ -250,7 +301,7 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -265,7 +316,7 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -284,22 +335,94 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                                   borderRadius: BorderRadius.circular(14),
                                   borderSide: BorderSide.none,
                                 ),
+                              filled: true,
+                              fillColor: AppTheme.cardBackground,
+                            ),
+                          ),
+                            const SizedBox(height: 10),
+                            TextField(
+                              controller: _roleOutcomeController,
+                              decoration: InputDecoration(
+                                labelText: 'Learning outcome (required)',
+                                hintText: 'What will the student achieve?',
+                                prefixIcon: const Icon(Icons.flag_outlined),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide.none,
+                                ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
-                            const SizedBox(height: 12),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: ElevatedButton.icon(
-                                onPressed: _addRole,
-                                icon: const Icon(Icons.add),
-                                label: const Text('Add role'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.primary,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: _roleHoursController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      labelText: 'Estimated hours',
+                                      prefixIcon: const Icon(Icons.timer_outlined),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      filled: true,
+                                      fillColor: AppTheme.cardBackground,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _roleDurationController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      labelText: 'Duration (weeks)',
+                                      prefixIcon: const Icon(Icons.calendar_today),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(14),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      filled: true,
+                                      fillColor: AppTheme.cardBackground,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          const SizedBox(height: 12),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [AppTheme.primary, AppTheme.primaryDark],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppTheme.primary.withValues(alpha: 0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton.icon(
+                                  onPressed: _addRole,
+                                  icon: const Icon(Icons.add),
+                                  label: const Text(
+                                    'Add role',
+                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    foregroundColor: Colors.white,
+                                    shadowColor: Colors.transparent,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -308,13 +431,33 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Text(
-                                    'List the roles you want students to apply to.',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color:
-                                          Colors.black.withValues(alpha: 0.5),
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.cardBackground,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline,
+                                          size: 16,
+                                          color: AppTheme.textMuted,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'List the roles you want students to apply to.',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: AppTheme.textSecondary,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -328,66 +471,183 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                           children: _openRoles.map((role) {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
-                              child: XPCard(
-                                padding: const EdgeInsets.all(14),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.work_outline,
-                                          size: 18,
-                                          color: AppTheme.primary,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            role.title,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w700,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      AppTheme.primary.withValues(alpha: 0.06),
+                                      AppTheme.primary.withValues(alpha: 0.02),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: AppTheme.primary.withValues(alpha: 0.1),
+                                  ),
+                                ),
+                                child: XPCard(
+                                  padding: const EdgeInsets.all(14),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.primary.withValues(alpha: 0.1),
+                                              borderRadius: BorderRadius.circular(8),
                                             ),
-                                        ),
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _openRoles.removeWhere(
-                                              (r) => r.title == role.title,
-                                            );
-                                          });
-                                        },
-                                        icon: const Icon(
-                                          Icons.delete_outline,
-                                          color: Colors.redAccent,
-                                        ),
+                                            child: const Icon(
+                                              Icons.work_outline,
+                                              size: 16,
+                                              color: AppTheme.primary,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Text(
+                                              role.title,
+                                              style: const TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                color: AppTheme.text,
+                                              ),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _openRoles.removeWhere(
+                                                  (r) => r.title == role.title,
+                                                );
+                                              });
+                                            },
+                                            icon: Container(
+                                              padding: const EdgeInsets.all(6),
+                                              decoration: BoxDecoration(
+                                                color: AppTheme.error.withValues(alpha: 0.1),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: const Icon(
+                                                Icons.close,
+                                                color: AppTheme.error,
+                                                size: 16,
+                                              ),
+                                            ),
                                       ),
                                     ],
                                   ),
-                                    if (role.commitment != null) ...[
-                                      const SizedBox(height: 6),
-                                      Text(
+                                  if (role.commitment != null) ...[
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.success.withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
                                         role.commitment!,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 12,
-                                          color:
-                                              Colors.black.withValues(alpha: 0.6),
+                                          fontWeight: FontWeight.w600,
+                                          color: AppTheme.successDark,
                                         ),
                                       ),
-                                    ],
-                                    if (role.description?.isNotEmpty == true) ...[
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        role.description!,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          height: 1.4,
-                                          color:
-                                              Colors.black.withValues(alpha: 0.7),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ],
+                                  if (role.learningOutcome.isNotEmpty) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      role.learningOutcome,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: AppTheme.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                  Row(
+                                    children: [
+                                      if (role.estimatedHours != null)
+                                        Container(
+                                          margin: const EdgeInsets.only(top: 8, right: 8),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.cardBackground,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.timer_outlined,
+                                                size: 14,
+                                                color: AppTheme.textSecondary,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '${role.estimatedHours} hrs',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: AppTheme.textSecondary,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      if (role.durationWeeks != null)
+                                        Container(
+                                          margin: const EdgeInsets.only(top: 8),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 6,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.cardBackground,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(
+                                                Icons.calendar_today,
+                                                size: 14,
+                                                color: AppTheme.textSecondary,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                '${role.durationWeeks} wks',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: AppTheme.textSecondary,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  if (role.description?.isNotEmpty == true) ...[
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      role.description!,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            height: 1.5,
+                                            color: AppTheme.textSecondary,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             );
@@ -397,131 +657,173 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                       const SizedBox(height: 22),
                       const XPSectionTitle(title: 'Preview'),
                       const SizedBox(height: 8),
-                      XPCard(
-                        padding: const EdgeInsets.all(18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  width: 56,
-                                  height: 56,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primary.withValues(
-                                      alpha: 0.1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      _companyNameController.text.isNotEmpty
-                                          ? _companyNameController.text[0]
-                                                .toUpperCase()
-                                          : '?',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        color: AppTheme.primary,
-                                        fontSize: 24,
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppTheme.primary.withValues(alpha: 0.08),
+                              AppTheme.primary.withValues(alpha: 0.02),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: AppTheme.primary.withValues(alpha: 0.1),
+                          ),
+                        ),
+                        child: XPCard(
+                          padding: const EdgeInsets.all(18),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 56,
+                                    height: 56,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [AppTheme.primary, AppTheme.primaryDark],
                                       ),
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppTheme.primary.withValues(alpha: 0.3),
+                                          blurRadius: 12,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
+                                    child: Center(
+                                      child: Text(
                                         _companyNameController.text.isNotEmpty
-                                            ? _companyNameController.text
-                                            : 'Company Name',
+                                            ? _companyNameController.text[0].toUpperCase()
+                                            : '?',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w800,
-                                          fontSize: 16,
+                                          color: Colors.white,
+                                          fontSize: 24,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 4,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: AppTheme.primary.withValues(
-                                            alpha: 0.1,
-                                          ),
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          _selectedIndustry ?? 'Industry',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _companyNameController.text.isNotEmpty
+                                              ? _companyNameController.text
+                                              : 'Company Name',
                                           style: const TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w600,
-                                            color: AppTheme.primary,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 16,
+                                            color: AppTheme.text,
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(height: 4),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 10,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: AppTheme.primary.withValues(alpha: 0.1),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Text(
+                                            _selectedIndustry ?? 'Industry',
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppTheme.primary,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (_descriptionController.text.isNotEmpty) ...[
+                                const SizedBox(height: 14),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.cardBackground,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    _descriptionController.text,
+                                    style: TextStyle(
+                                      color: AppTheme.textSecondary,
+                                      fontSize: 13,
+                                      height: 1.5,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
-                            ),
-                            if (_descriptionController.text.isNotEmpty) ...[
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 14),
                               Text(
-                                _descriptionController.text,
+                                'Looking for:',
                                 style: TextStyle(
-                                  color: Colors.black.withValues(alpha: 0.7),
-                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                  color: AppTheme.textSecondary,
                                 ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
                               ),
-                            ],
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Looking for:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children:
-                                  (_requiredSkills.isEmpty
-                                          ? ['Select skills']
-                                          : _requiredSkills)
-                                      .map(
-                                        (skill) => Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 6,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade100,
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            skill,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 12,
-                                            ),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: (_requiredSkills.isEmpty
+                                        ? ['Select skills']
+                                        : _requiredSkills)
+                                    .map(
+                                      (skill) => Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          gradient: _requiredSkills.isNotEmpty
+                                              ? LinearGradient(
+                                                  colors: [
+                                                    AppTheme.primary.withValues(alpha: 0.15),
+                                                    AppTheme.primary.withValues(alpha: 0.08),
+                                                  ],
+                                                )
+                                              : null,
+                                          color: _requiredSkills.isEmpty
+                                              ? AppTheme.cardBackground
+                                              : null,
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: _requiredSkills.isNotEmpty
+                                              ? Border.all(
+                                                  color: AppTheme.primary.withValues(alpha: 0.2),
+                                                )
+                                              : null,
+                                        ),
+                                        child: Text(
+                                          skill,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 12,
+                                            color: _requiredSkills.isNotEmpty
+                                                ? AppTheme.primary
+                                                : AppTheme.textMuted,
                                           ),
                                         ),
-                                      )
-                                      .toList(),
-                            ),
-                          ],
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],

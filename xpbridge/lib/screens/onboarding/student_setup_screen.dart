@@ -48,20 +48,56 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Complete your profile',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+              // Header with gradient accent
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [AppTheme.primary, AppTheme.primaryDark],
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primary.withValues(alpha: 0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.person_outline,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Complete your profile',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: AppTheme.text,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Help startups get to know you',
+                          style: TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                'Help startups get to know you. Missions are short, safe, and learning-first.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.black.withValues(alpha: 0.6),
-                ),
-              ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 20),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -85,7 +121,7 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -100,7 +136,7 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -119,7 +155,7 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -135,7 +171,7 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
-                                fillColor: AppTheme.background,
+                                fillColor: AppTheme.cardBackground,
                               ),
                             ),
                           ],
@@ -173,32 +209,67 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                       XPCard(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 12,
+                          vertical: 16,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Slider(
-                              min: 2,
-                              max: 25,
-                              divisions: 23,
-                              value: _hours,
-                              label: '${_hours.round()} hrs',
-                              onChanged: (v) => setState(() => _hours = v),
-                            ),
-                            Text(
-                              '${_hours.round()} hours per week',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
+                            SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                activeTrackColor: AppTheme.primary,
+                                inactiveTrackColor: AppTheme.cardBackground,
+                                thumbColor: AppTheme.primary,
+                                overlayColor: AppTheme.primary.withValues(alpha: 0.2),
+                                thumbShape: const RoundSliderThumbShape(
+                                  enabledThumbRadius: 12,
+                                ),
+                                trackHeight: 8,
+                              ),
+                              child: Slider(
+                                min: 2,
+                                max: 25,
+                                divisions: 23,
+                                value: _hours,
+                                label: '${_hours.round()} hrs',
+                                onChanged: (v) => setState(() => _hours = v),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Let startups know your availability.',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: Colors.black.withValues(alpha: 0.6),
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppTheme.success.withValues(alpha: 0.15),
+                                    AppTheme.success.withValues(alpha: 0.08),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppTheme.success.withValues(alpha: 0.25),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.schedule,
+                                    size: 18,
+                                    color: AppTheme.successDark,
                                   ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '${_hours.round()} hours per week',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppTheme.successDark,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -213,95 +284,161 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                         }),
                       ),
                       const SizedBox(height: 8),
-                      XPCard(
-                        padding: const EdgeInsets.all(18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 24,
-                                  backgroundColor: AppTheme.primary.withValues(
-                                    alpha: 0.1,
-                                  ),
-                                  child: Text(
-                                    _nameController.text.isNotEmpty
-                                        ? _nameController.text[0].toUpperCase()
-                                        : '?',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      color: AppTheme.primary,
-                                      fontSize: 20,
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppTheme.primary.withValues(alpha: 0.08),
+                              AppTheme.primary.withValues(alpha: 0.02),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: AppTheme.primary.withValues(alpha: 0.1),
+                          ),
+                        ),
+                        child: XPCard(
+                          padding: const EdgeInsets.all(18),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 52,
+                                    height: 52,
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          AppTheme.primary,
+                                          AppTheme.primaryDark,
+                                        ],
+                                      ),
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: AppTheme.primary.withValues(alpha: 0.3),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
+                                    child: Center(
+                                      child: Text(
                                         _nameController.text.isNotEmpty
-                                            ? _nameController.text
-                                            : 'Your Name',
+                                            ? _nameController.text[0].toUpperCase()
+                                            : '?',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w800,
-                                          fontSize: 16,
+                                          color: Colors.white,
+                                          fontSize: 22,
                                         ),
                                       ),
-                                      if (_educationController.text.isNotEmpty)
-                                        Text(
-                                          _educationController.text,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black.withValues(
-                                              alpha: 0.6,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.timer_outlined, size: 18),
-                                    const SizedBox(width: 6),
-                                    Text('${_hours.round()} hrs'),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children:
-                                  (_skills.isEmpty ? ['Add skills'] : _skills)
-                                      .map(
-                                        (skill) => Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 10,
-                                            vertical: 8,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade100,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            skill,
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _nameController.text.isNotEmpty
+                                              ? _nameController.text
+                                              : 'Your Name',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 16,
+                                            color: AppTheme.text,
                                           ),
                                         ),
-                                      )
-                                      .toList(),
-                            ),
-                          ],
+                                        if (_educationController.text.isNotEmpty)
+                                          Text(
+                                            _educationController.text,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: AppTheme.textSecondary,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.success.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(
+                                          Icons.schedule,
+                                          size: 14,
+                                          color: AppTheme.successDark,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${_hours.round()} hrs',
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: AppTheme.successDark,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: (_skills.isEmpty ? ['Add skills'] : _skills)
+                                    .map(
+                                      (skill) => Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          gradient: _skills.isNotEmpty
+                                              ? LinearGradient(
+                                                  colors: [
+                                                    AppTheme.primary.withValues(alpha: 0.15),
+                                                    AppTheme.primary.withValues(alpha: 0.08),
+                                                  ],
+                                                )
+                                              : null,
+                                          color: _skills.isEmpty ? AppTheme.cardBackground : null,
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: _skills.isNotEmpty
+                                              ? Border.all(
+                                                  color: AppTheme.primary.withValues(alpha: 0.2),
+                                                )
+                                              : null,
+                                        ),
+                                        child: Text(
+                                          skill,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 13,
+                                            color: _skills.isNotEmpty
+                                                ? AppTheme.primary
+                                                : AppTheme.textMuted,
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -334,6 +471,9 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                               ? _portfolioController.text
                               : null,
                           createdAt: DateTime.now(),
+                          xpPoints: 0,
+                          level: 1,
+                          missionsCompletedCount: 0,
                         );
 
                         // Save profile data to shared_preferences

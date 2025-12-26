@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app.dart';
 import '../../data/dummy_data.dart';
@@ -6,9 +7,9 @@ import '../../models/application.dart';
 import '../../models/startup_profile.dart';
 import '../../models/startup_role.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/xp_app_bar.dart';
 import '../../widgets/xp_button.dart';
 import '../../widgets/xp_card.dart';
+import '../../widgets/xp_section_title.dart';
 
 class StartupDetailScreen extends StatefulWidget {
   const StartupDetailScreen({super.key, required this.startupId});
@@ -136,7 +137,7 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
               XPButton(
                 label: 'Send Application',
                 icon: Icons.send_rounded,
-                onPressed: () {
+                onPressed: () async {
                   final appState = AppStateScope.of(context);
                   final student = appState.studentProfile;
 
@@ -154,7 +155,7 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
                           : null,
                       appliedAt: DateTime.now(),
                     );
-                    appState.addApplication(application);
+                    await appState.addApplication(application);
                     setState(() {
                       if (roleTitle != null) {
                         _appliedRoleTitles.add(roleTitle);
@@ -194,14 +195,24 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
     if (startup == null) {
       return Scaffold(
         backgroundColor: AppTheme.background,
-        body: SafeArea(
-          child: Column(
-            children: [
-              const XPAppBar(title: 'Not Found'),
-              const Expanded(child: Center(child: Text('Startup not found'))),
-            ],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () => context.pop(),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: AppTheme.softShadow,
+              ),
+              child: const Icon(Icons.arrow_back, color: AppTheme.text),
+            ),
           ),
+          title: const Text('Not Found'),
         ),
+        body: const Center(child: Text('Startup not found')),
       );
     }
 
@@ -219,373 +230,517 @@ class _StartupDetailScreenState extends State<StartupDetailScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: Column(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: AppTheme.softShadow,
+            ),
+            child: const Icon(Icons.arrow_back, color: AppTheme.text),
+          ),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            XPAppBar(title: startup.companyName, subtitle: startup.industry),
-            Expanded(
-              child: SingleChildScrollView(
+            Text(
+              startup.companyName,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: AppTheme.text,
+              ),
+            ),
+            Text(
+              startup.industry,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Hero Card with Company Info
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppTheme.primary.withValues(alpha: 0.08),
+                    AppTheme.primary.withValues(alpha: 0.02),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: AppTheme.primary.withValues(alpha: 0.1),
+                ),
+              ),
+              child: XPCard(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    XPCard(
-                      padding: const EdgeInsets.all(20),
+                    Row(
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppTheme.primary,
+                                AppTheme.primaryDark,
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(18),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.primary.withValues(alpha: 0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              startup.companyName[0].toUpperCase(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                fontSize: 28,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                startup.companyName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 20,
+                                  color: AppTheme.text,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  startup.industry,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppTheme.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      startup.description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        height: 1.6,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                    if (startup.websiteUrl != null) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppTheme.cardBackground,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.language,
+                              size: 16,
+                              color: AppTheme.primary,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              startup.websiteUrl!,
+                              style: const TextStyle(
+                                color: AppTheme.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Skill Match Card
+            if (matchingSkills.isNotEmpty) ...[
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppTheme.success.withValues(alpha: 0.15),
+                      AppTheme.success.withValues(alpha: 0.05),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppTheme.success.withValues(alpha: 0.3),
+                  ),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.successDark.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.check_circle,
+                        color: AppTheme.successDark,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Great match!',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.successDark,
+                            ),
+                          ),
+                          Text(
+                            'You have ${matchingSkills.length} matching skill${matchingSkills.length > 1 ? 's' : ''}: ${matchingSkills.join(", ")}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            // Open Roles Section
+            if (startup.openRoles.isNotEmpty) ...[
+              const XPSectionTitle(title: 'Open Roles'),
+              const SizedBox(height: 10),
+              Column(
+                children: startup.openRoles.map((role) {
+                  final alreadyApplied = _appliedRoleTitles.contains(role.title);
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: XPCard(
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                width: 64,
-                                height: 64,
+                                padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primary.withValues(
-                                    alpha: 0.1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(18),
+                                  color: AppTheme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    startup.companyName[0].toUpperCase(),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      color: AppTheme.primary,
-                                      fontSize: 28,
-                                    ),
-                                  ),
+                                child: const Icon(
+                                  Icons.work_outline,
+                                  color: AppTheme.primary,
+                                  size: 20,
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      startup.companyName,
+                                      role.title,
                                       style: const TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 16,
+                                        color: AppTheme.text,
                                       ),
                                     ),
-                                    const SizedBox(height: 6),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: AppTheme.primary.withValues(
-                                          alpha: 0.1,
-                                        ),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        startup.industry,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppTheme.primary,
+                                    if (role.commitment != null) ...[
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        role.commitment!,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: AppTheme.textSecondary,
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            startup.description,
-                            style: TextStyle(
-                              fontSize: 14,
-                              height: 1.5,
-                              color: Colors.black.withValues(alpha: 0.7),
-                            ),
-                          ),
-                          if (startup.websiteUrl != null) ...[
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.link,
-                                  size: 16,
-                                  color: AppTheme.primary,
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: alreadyApplied
+                                      ? AppTheme.success.withValues(alpha: 0.1)
+                                      : AppTheme.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  startup.websiteUrl!,
-                                  style: const TextStyle(
-                                    color: AppTheme.primary,
-                                    fontWeight: FontWeight.w600,
+                                child: TextButton.icon(
+                                  onPressed: alreadyApplied
+                                      ? null
+                                      : () => _showApplyDialog(context, role: role),
+                                  icon: Icon(
+                                    alreadyApplied ? Icons.check_circle : Icons.send_rounded,
+                                    color: alreadyApplied ? AppTheme.successDark : AppTheme.primary,
+                                    size: 18,
+                                  ),
+                                  label: Text(
+                                    alreadyApplied ? 'Applied' : 'Apply',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: alreadyApplied ? AppTheme.successDark : AppTheme.primary,
+                                    ),
+                                    ),
                                   ),
                                 ),
                               ],
+                            ),
+                          if (role.learningOutcome.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              role.learningOutcome,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppTheme.textSecondary,
+                              ),
+                            ),
+                          ],
+                          Row(
+                            children: [
+                              if (role.estimatedHours != null)
+                                Container(
+                                  margin: const EdgeInsets.only(top: 8, right: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.cardBackground,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.timer_outlined,
+                                        size: 14,
+                                        color: AppTheme.textSecondary,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '${role.estimatedHours} hrs',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppTheme.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              if (role.durationWeeks != null)
+                                Container(
+                                  margin: const EdgeInsets.only(top: 8),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.cardBackground,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_today,
+                                        size: 14,
+                                        color: AppTheme.textSecondary,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        '${role.durationWeeks} wks',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppTheme.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+                          if (role.description?.isNotEmpty == true) ...[
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppTheme.cardBackground,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                role.description!,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  height: 1.5,
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
                             ),
                           ],
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    if (matchingSkills.isNotEmpty) ...[
-                      XPCard(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Great match!',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                  Text(
-                                    'You have ${matchingSkills.length} matching skill${matchingSkills.length > 1 ? 's' : ''}: ${matchingSkills.join(", ")}',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.black.withValues(
-                                        alpha: 0.7,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                    if (startup.openRoles.isNotEmpty) ...[
-                      const Text(
-                        'Open Roles',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Column(
-                        children: startup.openRoles.map((role) {
-                          final alreadyApplied =
-                              _appliedRoleTitles.contains(role.title);
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: XPCard(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              role.title,
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: 16,
-                                              ),
-                                            ),
-                                            if (role.commitment != null) ...[
-                                              const SizedBox(height: 4),
-                                              Text(
-                                                role.commitment!,
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  color: Colors.black.withValues(
-                                                    alpha: 0.6,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ],
-                                        ),
-                                      ),
-                                      TextButton.icon(
-                                        onPressed: alreadyApplied
-                                            ? null
-                                            : () => _showApplyDialog(
-                                                  context,
-                                                  role: role,
-                                                ),
-                                        icon: Icon(
-                                          alreadyApplied
-                                              ? Icons.check_circle
-                                              : Icons.send_rounded,
-                                          color: alreadyApplied
-                                              ? Colors.green
-                                              : AppTheme.primary,
-                                        ),
-                                        label: Text(
-                                          alreadyApplied ? 'Applied' : 'Apply',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            color: alreadyApplied
-                                                ? Colors.green
-                                                : AppTheme.primary,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (role.description?.isNotEmpty == true) ...[
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      role.description!,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        height: 1.5,
-                                        color: Colors.black.withValues(
-                                          alpha: 0.7,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                    const Text(
-                      'Skills They Need',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: startup.requiredSkills.map((skill) {
-                        final isMatch = studentSkills.contains(skill);
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isMatch
-                                ? Colors.green.withValues(alpha: 0.1)
-                                : Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                            border: isMatch
-                                ? Border.all(
-                                    color: Colors.green.withValues(alpha: 0.3),
-                                  )
-                                : null,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (isMatch) ...[
-                                const Icon(
-                                  Icons.check,
-                                  size: 16,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 6),
-                              ],
-                              Text(
-                                skill,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: isMatch
-                                      ? Colors.green.shade700
-                                      : Colors.black87,
-                                ),
-                              ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 8),
+            ],
+
+            // Skills Section
+            const XPSectionTitle(title: 'Skills They Need'),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: startup.requiredSkills.map((skill) {
+                final isMatch = studentSkills.contains(skill);
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: isMatch
+                        ? LinearGradient(
+                            colors: [
+                              AppTheme.success.withValues(alpha: 0.2),
+                              AppTheme.success.withValues(alpha: 0.1),
                             ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    if (startup.projectDetails != null) ...[
-                      const SizedBox(height: 20),
-                      const Text(
-                        'What They\'re Looking For',
+                          )
+                        : null,
+                    color: isMatch ? null : AppTheme.cardBackground,
+                    borderRadius: BorderRadius.circular(12),
+                    border: isMatch
+                        ? Border.all(color: AppTheme.success.withValues(alpha: 0.4))
+                        : null,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isMatch) ...[
+                        const Icon(Icons.check, size: 16, color: AppTheme.successDark),
+                        const SizedBox(width: 6),
+                      ],
+                      Text(
+                        skill,
                         style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      XPCard(
-                        padding: const EdgeInsets.all(16),
-                        child: Text(
-                          startup.projectDetails!,
-                          style: TextStyle(
-                            fontSize: 14,
-                            height: 1.5,
-                            color: Colors.black.withValues(alpha: 0.7),
-                          ),
+                          fontWeight: FontWeight.w600,
+                          color: isMatch ? AppTheme.successDark : AppTheme.text,
                         ),
                       ),
                     ],
-                    const SizedBox(height: 100),
-                  ],
+                  ),
+                );
+              }).toList(),
+            ),
+
+            // Project Details Section
+            if (startup.projectDetails != null) ...[
+              const SizedBox(height: 20),
+              const XPSectionTitle(title: "What They're Looking For"),
+              const SizedBox(height: 10),
+              XPCard(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  startup.projectDetails!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.6,
+                    color: AppTheme.textSecondary,
+                  ),
                 ),
               ),
-            ),
+            ],
+            const SizedBox(height: 100),
           ],
         ),
       ),
       bottomSheet: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
+              color: AppTheme.text.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, -4),
             ),
           ],
         ),
         child: SafeArea(
           child: XPButton(
             label: startup.openRoles.isNotEmpty
-                ? (roleCta != null
-                    ? 'Apply for ${roleCta.title}'
-                    : 'Applications Sent')
+                ? (roleCta != null ? 'Apply for ${roleCta.title}' : 'Applications Sent')
                 : (_hasApplied ? 'Application Sent!' : 'Apply Now'),
             icon: startup.openRoles.isNotEmpty
-                ? (roleCta != null
-                    ? Icons.work_outline
-                    : Icons.check_circle)
+                ? (roleCta != null ? Icons.work_outline : Icons.check_circle)
                 : (_hasApplied ? Icons.check_circle : Icons.send_rounded),
             onPressed: startup.openRoles.isNotEmpty
-                ? (roleCta != null
-                    ? () => _showApplyDialog(
-                          context,
-                          role: roleCta,
-                        )
-                    : null)
+                ? (roleCta != null ? () => _showApplyDialog(context, role: roleCta) : null)
                 : (_hasApplied ? null : () => _showApplyDialog(context)),
           ),
         ),

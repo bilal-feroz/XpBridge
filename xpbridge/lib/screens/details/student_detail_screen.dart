@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app.dart';
 import '../../data/dummy_data.dart';
 import '../../models/student_profile.dart';
 import '../../theme/app_theme.dart';
-import '../../widgets/xp_app_bar.dart';
 import '../../widgets/xp_button.dart';
 import '../../widgets/xp_card.dart';
+import '../../widgets/xp_section_title.dart';
 
 class StudentDetailScreen extends StatelessWidget {
   const StudentDetailScreen({super.key, required this.studentId});
@@ -30,14 +31,24 @@ class StudentDetailScreen extends StatelessWidget {
     if (student == null) {
       return Scaffold(
         backgroundColor: AppTheme.background,
-        body: SafeArea(
-          child: Column(
-            children: [
-              const XPAppBar(title: 'Not Found'),
-              const Expanded(child: Center(child: Text('Student not found'))),
-            ],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            onPressed: () => context.pop(),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: AppTheme.softShadow,
+              ),
+              child: const Icon(Icons.arrow_back, color: AppTheme.text),
+            ),
           ),
+          title: const Text('Not Found'),
         ),
+        body: const Center(child: Text('Student not found')),
       );
     }
 
@@ -47,238 +58,333 @@ class StudentDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            XPAppBar(
-              title: student.name,
-              subtitle: student.education ?? 'Student',
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => context.pop(),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: AppTheme.softShadow,
             ),
-            Expanded(
-              child: SingleChildScrollView(
+            child: const Icon(Icons.arrow_back, color: AppTheme.text),
+          ),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              student.name,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: AppTheme.text,
+              ),
+            ),
+            Text(
+              student.education ?? 'Student',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Hero Card with Student Info
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppTheme.primary.withValues(alpha: 0.08),
+                    AppTheme.primary.withValues(alpha: 0.02),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: AppTheme.primary.withValues(alpha: 0.1),
+                ),
+              ),
+              child: XPCard(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    XPCard(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                    Row(
+                      children: [
+                        Container(
+                          width: 72,
+                          height: 72,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppTheme.primary,
+                                AppTheme.primaryDark,
+                              ],
+                            ),
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppTheme.primary.withValues(alpha: 0.3),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Center(
+                            child: Text(
+                              student.name[0].toUpperCase(),
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                fontSize: 28,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CircleAvatar(
-                                radius: 36,
-                                backgroundColor: AppTheme.primary.withValues(
-                                  alpha: 0.1,
-                                ),
-                                child: Text(
-                                  student.name[0].toUpperCase(),
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    color: AppTheme.primary,
-                                    fontSize: 28,
-                                  ),
+                              Text(
+                                student.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 20,
+                                  color: AppTheme.text,
                                 ),
                               ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              if (student.education != null) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  student.education!,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: AppTheme.textSecondary,
+                                  ),
+                                ),
+                              ],
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.success.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
-                                      student.name,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 20,
-                                      ),
+                                    const Icon(
+                                      Icons.schedule,
+                                      size: 14,
+                                      color: AppTheme.successDark,
                                     ),
-                                    if (student.education != null) ...[
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        student.education!,
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.black.withValues(
-                                            alpha: 0.6,
-                                          ),
-                                        ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${student.availabilityHours.round()} hrs/week',
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppTheme.successDark,
                                       ),
-                                    ],
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.timer_outlined,
-                                          size: 16,
-                                          color: Colors.grey,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          '${student.availabilityHours.round()} hrs/week available',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.grey.shade600,
-                                          ),
-                                        ),
-                                      ],
                                     ),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                          if (student.bio != null) ...[
-                            const SizedBox(height: 16),
-                            Text(
-                              student.bio!,
-                              style: TextStyle(
-                                fontSize: 14,
-                                height: 1.5,
-                                color: Colors.black.withValues(alpha: 0.7),
-                              ),
-                            ),
-                          ],
-                          if (student.portfolioUrl != null) ...[
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.link,
-                                  size: 16,
-                                  color: AppTheme.primary,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  student.portfolioUrl!,
-                                  style: const TextStyle(
-                                    color: AppTheme.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    if (matchingSkills.isNotEmpty) ...[
-                      XPCard(
-                        padding: const EdgeInsets.all(16),
+                    if (student.bio != null) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppTheme.cardBackground,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          student.bio!,
+                          style: TextStyle(
+                            fontSize: 14,
+                            height: 1.6,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ),
+                    ],
+                    if (student.portfolioUrl != null) ...[
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppTheme.cardBackground,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.check_circle,
-                                color: Colors.green,
-                              ),
+                            const Icon(
+                              Icons.language,
+                              size: 16,
+                              color: AppTheme.primary,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Skills match!',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.green,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${matchingSkills.length} of your required skills: ${matchingSkills.join(", ")}',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.black.withValues(
-                                        alpha: 0.7,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                            const SizedBox(width: 6),
+                            Text(
+                              student.portfolioUrl!,
+                              style: const TextStyle(
+                                color: AppTheme.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
                     ],
-                    const Text(
-                      'Skills',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: student.skills.map((skill) {
-                        final isMatch = startupSkills.contains(skill);
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isMatch
-                                ? Colors.green.withValues(alpha: 0.1)
-                                : Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                            border: isMatch
-                                ? Border.all(
-                                    color: Colors.green.withValues(alpha: 0.3),
-                                  )
-                                : null,
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              if (isMatch) ...[
-                                const Icon(
-                                  Icons.check,
-                                  size: 16,
-                                  color: Colors.green,
-                                ),
-                                const SizedBox(width: 6),
-                              ],
-                              Text(
-                                skill,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  color: isMatch
-                                      ? Colors.green.shade700
-                                      : Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 100),
                   ],
                 ),
               ),
             ),
+            const SizedBox(height: 16),
+
+            // Skill Match Card
+            if (matchingSkills.isNotEmpty) ...[
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppTheme.success.withValues(alpha: 0.15),
+                      AppTheme.success.withValues(alpha: 0.05),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppTheme.success.withValues(alpha: 0.3),
+                  ),
+                ),
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.successDark.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.check_circle,
+                        color: AppTheme.successDark,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Skills match!',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.successDark,
+                            ),
+                          ),
+                          Text(
+                            '${matchingSkills.length} of your required skills: ${matchingSkills.join(", ")}',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+
+            // Skills Section
+            const XPSectionTitle(title: 'Skills'),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: student.skills.map((skill) {
+                final isMatch = startupSkills.contains(skill);
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    gradient: isMatch
+                        ? LinearGradient(
+                            colors: [
+                              AppTheme.success.withValues(alpha: 0.2),
+                              AppTheme.success.withValues(alpha: 0.1),
+                            ],
+                          )
+                        : null,
+                    color: isMatch ? null : AppTheme.cardBackground,
+                    borderRadius: BorderRadius.circular(12),
+                    border: isMatch
+                        ? Border.all(color: AppTheme.success.withValues(alpha: 0.4))
+                        : null,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (isMatch) ...[
+                        const Icon(Icons.check, size: 16, color: AppTheme.successDark),
+                        const SizedBox(width: 6),
+                      ],
+                      Text(
+                        skill,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: isMatch ? AppTheme.successDark : AppTheme.text,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 100),
           ],
         ),
       ),
       bottomSheet: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
+              color: AppTheme.text.withValues(alpha: 0.08),
+              blurRadius: 16,
+              offset: const Offset(0, -4),
             ),
           ],
         ),

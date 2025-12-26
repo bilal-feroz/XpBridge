@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../app.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/signup_screen.dart';
+import '../screens/applications/student_applications_screen.dart';
 import '../screens/dashboard/startup_dashboard_screen.dart';
 import '../screens/dashboard/student_dashboard_screen.dart';
 import '../screens/details/startup_detail_screen.dart';
@@ -80,7 +81,7 @@ class AppRouter {
         name: 'myApplications',
         path: '/student/applications',
         pageBuilder: (context, state) =>
-            _slide(const _PlaceholderScreen(title: 'My Applications')),
+            _slide(const StudentApplicationsScreen()),
       ),
       GoRoute(
         name: 'studentProfile',

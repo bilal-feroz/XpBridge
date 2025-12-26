@@ -10,6 +10,9 @@ class StudentProfile {
   final String? portfolioUrl;
   final String? profileImageUrl;
   final DateTime createdAt;
+  final int xpPoints;
+  final int level;
+  final int missionsCompletedCount;
 
   const StudentProfile({
     required this.id,
@@ -23,6 +26,9 @@ class StudentProfile {
     this.portfolioUrl,
     this.profileImageUrl,
     required this.createdAt,
+    this.xpPoints = 0,
+    this.level = 1,
+    this.missionsCompletedCount = 0,
   });
 
   StudentProfile copyWith({
@@ -37,6 +43,9 @@ class StudentProfile {
     String? portfolioUrl,
     String? profileImageUrl,
     DateTime? createdAt,
+    int? xpPoints,
+    int? level,
+    int? missionsCompletedCount,
   }) {
     return StudentProfile(
       id: id ?? this.id,
@@ -50,6 +59,10 @@ class StudentProfile {
       portfolioUrl: portfolioUrl ?? this.portfolioUrl,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       createdAt: createdAt ?? this.createdAt,
+      xpPoints: xpPoints ?? this.xpPoints,
+      level: level ?? this.level,
+      missionsCompletedCount:
+          missionsCompletedCount ?? this.missionsCompletedCount,
     );
   }
 }
