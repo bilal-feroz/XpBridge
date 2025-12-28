@@ -496,8 +496,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         currentIndex: 0,
         onTap: (index) {
           if (index == 1) {
-            context.pushNamed('myApplications');
+            context.pushNamed('aiChat');
           } else if (index == 2) {
+            context.pushNamed('myApplications');
+          } else if (index == 3) {
             context.pushNamed('studentProfile');
           }
         },
@@ -554,8 +556,8 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        margin: const EdgeInsets.all(24),
-        padding: const EdgeInsets.all(32),
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: AppTheme.cardBackground,
           borderRadius: BorderRadius.circular(24),
@@ -564,40 +566,40 @@ class _EmptyState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 64,
+              height: 64,
               decoration: BoxDecoration(
                 color: AppTheme.surface,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(
                 Icons.search_off_rounded,
-                size: 40,
+                size: 32,
                 color: AppTheme.textMuted,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             const Text(
               'No missions found',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: AppTheme.text,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               'Try adjusting your filters to find more opportunities',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 13,
                 color: AppTheme.textSecondary,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             TextButton.icon(
               onPressed: onClear,
-              icon: const Icon(Icons.refresh_rounded),
+              icon: const Icon(Icons.refresh_rounded, size: 18),
               label: const Text('Clear filters'),
               style: TextButton.styleFrom(
                 foregroundColor: AppTheme.primary,
@@ -976,18 +978,25 @@ class _BottomNav extends StatelessWidget {
                 onTap: () => onTap(0),
               ),
               _NavItem(
+                icon: Icons.auto_awesome_outlined,
+                activeIcon: Icons.auto_awesome,
+                label: 'AI Advisor',
+                isActive: currentIndex == 1,
+                onTap: () => onTap(1),
+              ),
+              _NavItem(
                 icon: Icons.description_outlined,
                 activeIcon: Icons.description,
                 label: 'Applications',
-                isActive: currentIndex == 1,
-                onTap: () => onTap(1),
+                isActive: currentIndex == 2,
+                onTap: () => onTap(2),
               ),
               _NavItem(
                 icon: Icons.person_outline,
                 activeIcon: Icons.person,
                 label: 'Profile',
-                isActive: currentIndex == 2,
-                onTap: () => onTap(2),
+                isActive: currentIndex == 3,
+                onTap: () => onTap(3),
               ),
             ],
           ),

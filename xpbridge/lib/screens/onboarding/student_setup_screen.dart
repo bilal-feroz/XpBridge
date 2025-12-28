@@ -483,6 +483,9 @@ class _StudentSetupScreenState extends State<StudentSetupScreen> {
                         await prefs.setStringList('profile_skills', _skills.toList());
                         await prefs.setDouble('profile_hours', _hours);
 
+                        // Mark as logged in for auto-login on next app launch
+                        await prefs.setBool('is_logged_in', true);
+
                         if (!context.mounted) return;
                         appState.saveStudentProfile(profile);
                         context.goNamed('studentDashboard');

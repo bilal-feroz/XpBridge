@@ -12,6 +12,7 @@ import 'models/application.dart';
 import 'models/event_log_entry.dart';
 import 'models/student_profile.dart';
 import 'models/startup_profile.dart';
+import 'models/startup_role.dart';
 
 enum UserRole { student, startup }
 
@@ -46,7 +47,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void logout() {
+  Future<void> logout() async {
     _isLoggedIn = false;
     _userRole = null;
     _studentProfile = null;
@@ -54,7 +55,93 @@ class AppState extends ChangeNotifier {
     _applications = [];
     _eventLog = [];
     _xpFeedOptOut = false;
+
+    // Clear login state from SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('is_logged_in', false);
+
     notifyListeners();
+  }
+
+  /// Loads user session from SharedPreferences on app startup
+  /// Returns true if user was logged in, false otherwise
+  Future<bool> loadUserSession() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+
+    if (!isLoggedIn) return false;
+
+    final roleStr = prefs.getString('user_role');
+    if (roleStr == null) return false;
+
+    final role = roleStr == 'student' ? UserRole.student : UserRole.startup;
+
+    if (role == UserRole.student) {
+      // Reconstruct StudentProfile from saved keys
+      final name = prefs.getString('profile_name') ?? '';
+      final email = prefs.getString('user_email') ?? '';
+      final bio = prefs.getString('profile_bio');
+      final education = prefs.getString('profile_education');
+      final skills = prefs.getStringList('profile_skills') ?? [];
+      final hours = prefs.getDouble('profile_hours') ?? 10.0;
+
+      if (name.isEmpty) return false;
+
+      _studentProfile = StudentProfile(
+        id: 'user_${DateTime.now().millisecondsSinceEpoch}',
+        name: name,
+        email: email,
+        bio: bio,
+        education: education,
+        skills: skills,
+        availabilityHours: hours,
+        createdAt: DateTime.now(),
+      );
+    } else {
+      // Reconstruct StartupProfile from saved keys
+      final companyName = prefs.getString('startup_name') ?? '';
+      final email = prefs.getString('user_email') ?? '';
+      final description = prefs.getString('startup_description');
+      final industry = prefs.getString('startup_industry');
+      final skills = prefs.getStringList('startup_skills') ?? [];
+      final project = prefs.getString('startup_project');
+      final rolesJson = prefs.getString('startup_roles');
+
+      if (companyName.isEmpty) return false;
+
+      List<StartupRole> roles = [];
+      if (rolesJson != null && rolesJson.isNotEmpty) {
+        try {
+          final decoded = jsonDecode(rolesJson) as List<dynamic>;
+          roles = decoded
+              .map((item) => StartupRole.fromMap(Map<String, dynamic>.from(item as Map)))
+              .toList();
+        } catch (_) {
+          roles = [];
+        }
+      }
+
+      _startupProfile = StartupProfile(
+        id: 'startup_${DateTime.now().millisecondsSinceEpoch}',
+        companyName: companyName,
+        email: email,
+        description: description ?? '',
+        industry: industry ?? '',
+        requiredSkills: skills,
+        projectDetails: project,
+        openRoles: roles,
+        createdAt: DateTime.now(),
+      );
+    }
+
+    _isLoggedIn = true;
+    _userRole = role;
+
+    // Also load applications
+    await loadApplications();
+
+    notifyListeners();
+    return true;
   }
 
   void setUserRole(UserRole role) {

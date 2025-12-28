@@ -15,6 +15,7 @@ import '../screens/profile/startup_profile_screen.dart';
 import '../screens/profile/student_profile_screen.dart';
 import '../screens/onboarding/intro_screen.dart';
 import '../screens/splash/splash_screen.dart';
+import '../screens/chat/ai_chat_screen.dart';
 
 class AppRouter {
   AppRouter({required this.appState});
@@ -88,6 +89,11 @@ class AppRouter {
         path: '/student/profile',
         pageBuilder: (context, state) =>
             _slide(const StudentProfileScreen()),
+      ),
+      GoRoute(
+        name: 'aiChat',
+        path: '/student/ai-chat',
+        pageBuilder: (context, state) => _slide(const AiChatScreen()),
       ),
 
       // Startup Flow

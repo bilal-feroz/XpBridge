@@ -84,6 +84,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
+      // Save login state for auto-login on next app launch
+      await prefs.setBool('is_logged_in', true);
+
       final appState = AppStateScope.of(context);
       final role = savedRole == 'student' ? UserRole.student : UserRole.startup;
       appState.login(role: role);

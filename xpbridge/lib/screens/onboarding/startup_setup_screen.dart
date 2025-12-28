@@ -873,6 +873,9 @@ class _StartupSetupScreenState extends State<StartupSetupScreen> {
                           ),
                         );
 
+                        // Mark as logged in for auto-login on next app launch
+                        await prefs.setBool('is_logged_in', true);
+
                         if (!context.mounted) return;
                         appState.saveStartupProfile(profile);
                         context.goNamed('startupDashboard');
