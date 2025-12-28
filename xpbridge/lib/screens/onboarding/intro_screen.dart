@@ -18,27 +18,21 @@ class _IntroScreenState extends State<IntroScreen> {
 
   final List<_OnboardingPage> _pages = const [
     _OnboardingPage(
-      icon: Icons.person_search_rounded,
-      iconBackground: AppTheme.primary,
-      accentColor: AppTheme.primaryDark,
+      imagePath: 'assets/illustrations/pb.png',
       title: 'The Experience Gap',
       highlightedText: null,
       description:
           'Breaking into the professional world is tough. You need experience to get a job, but need a job to get experience.',
     ),
     _OnboardingPage(
-      icon: Icons.handshake_rounded,
-      iconBackground: AppTheme.success,
-      accentColor: AppTheme.successDark,
+      imagePath: 'assets/illustrations/pc.png',
       title: 'Your Bridge to the',
       highlightedText: 'Real World',
       description:
           'Stop waiting for graduation. Start building your CV today with micro-projects designed for learning.',
     ),
     _OnboardingPage(
-      icon: Icons.rocket_launch_rounded,
-      iconBackground: AppTheme.primary,
-      accentColor: AppTheme.primaryDark,
+      imagePath: 'assets/illustrations/pa.png',
       title: 'Unlock Your',
       highlightedText: 'Potential',
       description:
@@ -233,95 +227,13 @@ class _IntroScreenState extends State<IntroScreen> {
       child: Column(
         children: [
           const SizedBox(height: 20),
-          // Illustration container with layered design
+          // Illustration only
           Expanded(
             flex: 3,
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppTheme.cardBackground,
-                borderRadius: BorderRadius.circular(32),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Background pattern
-                  Positioned.fill(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(32),
-                      child: CustomPaint(
-                        painter: _PatternPainter(
-                          color: page.iconBackground.withValues(alpha: 0.08),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Decorative circles
-                  Positioned(
-                    top: 30,
-                    right: 30,
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: page.iconBackground.withValues(alpha: 0.15),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 50,
-                    left: 20,
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: page.iconBackground.withValues(alpha: 0.1),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 80,
-                    left: 50,
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: page.accentColor.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  // Main icon container
-                  Container(
-                    width: 140,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          page.iconBackground,
-                          page.accentColor,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(
-                          color: page.iconBackground.withValues(alpha: 0.4),
-                          blurRadius: 40,
-                          offset: const Offset(0, 20),
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      page.icon,
-                      size: 64,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+            child: Center(
+              child: Image.asset(
+                page.imagePath,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -384,41 +296,14 @@ class _IntroScreenState extends State<IntroScreen> {
 
 class _OnboardingPage {
   const _OnboardingPage({
-    required this.icon,
-    required this.iconBackground,
-    required this.accentColor,
+    required this.imagePath,
     required this.title,
     required this.highlightedText,
     required this.description,
   });
 
-  final IconData icon;
-  final Color iconBackground;
-  final Color accentColor;
+  final String imagePath;
   final String title;
   final String? highlightedText;
   final String description;
-}
-
-class _PatternPainter extends CustomPainter {
-  _PatternPainter({required this.color});
-
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1;
-
-    const spacing = 30.0;
-    for (var x = 0.0; x < size.width; x += spacing) {
-      for (var y = 0.0; y < size.height; y += spacing) {
-        canvas.drawCircle(Offset(x, y), 2, paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
