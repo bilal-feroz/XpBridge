@@ -429,10 +429,24 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
                   const SizedBox(height: 20),
                   // Stats row
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
                     decoration: BoxDecoration(
-                      color: AppTheme.cardBackground,
-                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        colors: [
+                          AppTheme.cardBackground,
+                          AppTheme.surface,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Row(
                       children: [
@@ -446,8 +460,18 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
                         ),
                         Container(
                           width: 1,
-                          height: 40,
-                          color: AppTheme.surface,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppTheme.cardBackground,
+                                AppTheme.textMuted.withValues(alpha: 0.1),
+                                AppTheme.cardBackground,
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                          ),
                         ),
                         Expanded(
                           child: _StatItem(
@@ -459,8 +483,18 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
                         ),
                         Container(
                           width: 1,
-                          height: 40,
-                          color: AppTheme.surface,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppTheme.cardBackground,
+                                AppTheme.textMuted.withValues(alpha: 0.1),
+                                AppTheme.cardBackground,
+                              ],
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                            ),
+                          ),
                         ),
                         Expanded(
                           child: _StatItem(
@@ -564,20 +598,48 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(height: 6),
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                color.withValues(alpha: 0.15),
+                color.withValues(alpha: 0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [
+              BoxShadow(
+                color: color.withValues(alpha: 0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 24,
+          ),
+        ),
+        const SizedBox(height: 8),
         Text(
           value,
           style: const TextStyle(
-            fontSize: 18,
+            fontSize: 20,
             fontWeight: FontWeight.w800,
             color: AppTheme.text,
           ),
         ),
+        const SizedBox(height: 2),
         Text(
           label,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
             color: AppTheme.textSecondary,
           ),
         ),

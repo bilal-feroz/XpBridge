@@ -19,6 +19,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   String? _selectedIndustry;
   String? _selectedSkill;
   bool _feedExpanded = true;
+  bool _statsExpanded = false;
 
   List<StartupProfile> get _filteredStartups {
     var startups = DummyData.startups;
@@ -160,40 +161,41 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
+                        horizontal: 10,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.primary.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(14),
+                        color: AppTheme.primary.withValues(alpha: 0.06),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Text(
                             'Level',
                             style: TextStyle(
-                              fontSize: 11,
+                              fontSize: 10,
                               color: AppTheme.textSecondary,
                             ),
                           ),
+                          const SizedBox(width: 4),
                           Text(
                             'L$level',
                             style: const TextStyle(
                               fontWeight: FontWeight.w800,
-                              fontSize: 18,
+                              fontSize: 14,
                               color: AppTheme.primary,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,29 +205,30 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             children: [
                               Text(
                                 '$xpPoints XP',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
                                   color: AppTheme.text,
                                 ),
                               ),
                               if (nextLevel != null)
                                 Text(
                                   '${nextLevel - xpPoints} to L${level + 1}',
-                                  style: TextStyle(
-                                    fontSize: 12,
+                                  style: const TextStyle(
+                                    fontSize: 10,
                                     color: AppTheme.textSecondary,
                                   ),
                                 ),
                             ],
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 4),
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(8),
                             child: LinearProgressIndicator(
                               value: progress,
-                              minHeight: 8,
+                              minHeight: 6,
                               backgroundColor: AppTheme.cardBackground,
-                              valueColor: AlwaysStoppedAnimation<Color>(
+                              valueColor: const AlwaysStoppedAnimation<Color>(
                                 AppTheme.primary,
                               ),
                             ),
@@ -235,13 +238,49 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                // Stats row
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppTheme.cardBackground,
-                      borderRadius: BorderRadius.circular(16),
+                const SizedBox(height: 12),
+                // Stats row (collapsible)
+                GestureDetector(
+                  onTap: () => setState(() => _statsExpanded = !_statsExpanded),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cardBackground.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.analytics_outlined,
+                          size: 16,
+                          color: AppTheme.textSecondary,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Your Stats',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                        const Spacer(),
+                        Icon(
+                          _statsExpanded ? Icons.expand_less : Icons.expand_more,
+                          size: 18,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (_statsExpanded) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.cardBackground.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
@@ -255,7 +294,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         ),
                         Container(
                           width: 1,
-                          height: 40,
+                          height: 35,
                           color: AppTheme.surface,
                         ),
                         Expanded(
@@ -268,7 +307,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         ),
                         Container(
                           width: 1,
-                          height: 40,
+                          height: 35,
                           color: AppTheme.surface,
                         ),
                         Expanded(
@@ -283,11 +322,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     ),
                   ),
                 ],
-              ),
+              ],
             ),
+          ),
             // Filters section
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
                 color: AppTheme.surface,
               ),
@@ -338,6 +378,30 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                               secondary: true,
                             ),
                           ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Quick Actions (icon-only, compact)
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _IconActionChip(
+                          icon: Icons.auto_awesome_rounded,
+                          label: 'Skills',
+                          onTap: () => context.pushNamed('studentProfile'),
+                        ),
+                        _IconActionChip(
+                          icon: Icons.description_rounded,
+                          label: 'Apps',
+                          onTap: () => context.pushNamed('myApplications'),
+                        ),
+                        _IconActionChip(
+                          icon: Icons.smart_toy_rounded,
+                          label: 'AI Chat',
+                          onTap: () => context.pushNamed('aiChat'),
+                        ),
                       ],
                     ),
                   ),
@@ -433,17 +497,35 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   ),
                 ),
               ),
-            // Results count
+            // Section divider
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
               child: Row(
                 children: [
-                  Text(
-                    '${_filteredStartups.length} missions available',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppTheme.textSecondary,
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primary.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.star_rounded,
+                          size: 14,
+                          color: AppTheme.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        const Text(
+                          'Recommended for you',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const Spacer(),
@@ -453,12 +535,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         _selectedIndustry = null;
                         _selectedSkill = null;
                       }),
-                      icon: const Icon(Icons.clear, size: 16),
+                      icon: const Icon(Icons.clear, size: 14),
                       label: const Text('Clear'),
                       style: TextButton.styleFrom(
-                        foregroundColor: AppTheme.primary,
+                        foregroundColor: AppTheme.textSecondary,
                         padding: EdgeInsets.zero,
                         visualDensity: VisualDensity.compact,
+                        textStyle: const TextStyle(fontSize: 11),
                       ),
                     ),
                 ],
@@ -474,16 +557,21 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       }),
                     )
                   : ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
                       itemCount: _filteredStartups.length,
                       itemBuilder: (context, index) {
                         final startup = _filteredStartups[index];
-                        return _StartupCard(
-                          startup: startup,
-                          studentSkills: studentProfile?.skills ?? [],
-                          onTap: () => context.pushNamed(
-                            'startupDetail',
-                            pathParameters: {'id': startup.id},
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: index < _filteredStartups.length - 1 ? 20 : 0,
+                          ),
+                          child: _StartupCard(
+                            startup: startup,
+                            studentSkills: studentProfile?.skills ?? [],
+                            onTap: () => context.pushNamed(
+                              'startupDetail',
+                              pathParameters: {'id': startup.id},
+                            ),
                           ),
                         );
                       },
@@ -508,7 +596,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   }
 }
 
-class _StatItem extends StatelessWidget {
+class _StatItem extends StatefulWidget {
   const _StatItem({
     required this.icon,
     required this.label,
@@ -522,13 +610,65 @@ class _StatItem extends StatelessWidget {
   final Color color;
 
   @override
+  State<_StatItem> createState() => _StatItemState();
+}
+
+class _StatItemState extends State<_StatItem> {
+  late int _targetValue;
+  late int _currentValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _targetValue = int.tryParse(widget.value) ?? 0;
+    _currentValue = 0;
+    _animateValue();
+  }
+
+  void _animateValue() {
+    if (_targetValue == 0) return;
+    Future.delayed(const Duration(milliseconds: 50), () {
+      if (!mounted) return;
+      if (_currentValue < _targetValue) {
+        setState(() {
+          _currentValue = (_currentValue + (_targetValue / 10).ceil())
+              .clamp(0, _targetValue);
+        });
+        _animateValue();
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(height: 6),
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                widget.color.withValues(alpha: 0.12),
+                widget.color.withValues(alpha: 0.04),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: widget.color.withValues(alpha: 0.06),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Icon(widget.icon, color: widget.color, size: 22),
+        ),
+        const SizedBox(height: 8),
         Text(
-          value,
+          _currentValue.toString(),
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w800,
@@ -536,9 +676,10 @@ class _StatItem extends StatelessWidget {
           ),
         ),
         Text(
-          label,
+          widget.label,
           style: TextStyle(
             fontSize: 11,
+            fontWeight: FontWeight.w600,
             color: AppTheme.textSecondary,
           ),
         ),
@@ -596,13 +737,36 @@ class _EmptyState extends StatelessWidget {
                 color: AppTheme.textSecondary,
               ),
             ),
-            const SizedBox(height: 12),
-            TextButton.icon(
-              onPressed: onClear,
-              icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text('Clear filters'),
-              style: TextButton.styleFrom(
-                foregroundColor: AppTheme.primary,
+            const SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.primary, AppTheme.primaryDark],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primary.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: ElevatedButton.icon(
+                onPressed: onClear,
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: const Text('Get Started'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  foregroundColor: Colors.white,
+                  shadowColor: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
             ),
           ],
@@ -669,7 +833,7 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
-class _StartupCard extends StatelessWidget {
+class _StartupCard extends StatefulWidget {
   const _StartupCard({
     required this.startup,
     required this.studentSkills,
@@ -680,9 +844,16 @@ class _StartupCard extends StatelessWidget {
   final List<String> studentSkills;
   final VoidCallback onTap;
 
+  @override
+  State<_StartupCard> createState() => _StartupCardState();
+}
+
+class _StartupCardState extends State<_StartupCard> {
+  bool _isPressed = false;
+
   int get _matchingSkills {
-    return startup.requiredSkills
-        .where((skill) => studentSkills.contains(skill))
+    return widget.startup.requiredSkills
+        .where((skill) => widget.studentSkills.contains(skill))
         .length;
   }
 
@@ -691,19 +862,30 @@ class _StartupCard extends StatelessWidget {
     final matchCount = _matchingSkills;
     final hasMatch = matchCount > 0;
     final primaryRole =
-        startup.openRoles.isNotEmpty ? startup.openRoles.first : null;
+        widget.startup.openRoles.isNotEmpty ? widget.startup.openRoles.first : null;
+    final matchPercentage = widget.startup.requiredSkills.isNotEmpty
+        ? ((matchCount / widget.startup.requiredSkills.length) * 100).round()
+        : 0;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: XPCard(
-        onTap: onTap,
-        padding: const EdgeInsets.all(20),
-        elevated: true,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return GestureDetector(
+        onTapDown: (_) => setState(() => _isPressed = true),
+        onTapUp: (_) {
+          setState(() => _isPressed = false);
+          widget.onTap();
+        },
+        onTapCancel: () => setState(() => _isPressed = false),
+        child: AnimatedScale(
+          scale: _isPressed ? 0.98 : 1.0,
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          child: XPCard(
+            padding: const EdgeInsets.all(20),
+            elevated: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
                 Container(
                   width: 56,
                   height: 56,
@@ -718,7 +900,7 @@ class _StartupCard extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      startup.companyName[0].toUpperCase(),
+                      widget.startup.companyName[0].toUpperCase(),
                       style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         color: AppTheme.primary,
@@ -733,7 +915,7 @@ class _StartupCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        startup.companyName,
+                        widget.startup.companyName,
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 17,
@@ -751,7 +933,7 @@ class _StartupCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          startup.industry,
+                          widget.startup.industry,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -765,47 +947,38 @@ class _StartupCard extends StatelessWidget {
                 if (hasMatch)
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+                      horizontal: 10,
+                      vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [AppTheme.success, AppTheme.successDark],
+                      color: AppTheme.success.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        width: 1.5,
+                        color: AppTheme.success.withValues(alpha: 0.4),
                       ),
-                      borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.success.withValues(alpha: 0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                          color: AppTheme.success.withValues(alpha: 0.06),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.check_circle,
-                          size: 14,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '$matchCount match${matchCount > 1 ? 'es' : ''}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      '$matchPercentage% match',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.successDark,
+                      ),
                     ),
                   ),
               ],
             ),
             const SizedBox(height: 16),
             Text(
-              startup.description,
+              widget.startup.description,
               style: TextStyle(
                 fontSize: 14,
                 color: AppTheme.textSecondary,
@@ -814,12 +987,12 @@ class _StartupCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            if (startup.openRoles.isNotEmpty) ...[
+            if (widget.startup.openRoles.isNotEmpty) ...[
               const SizedBox(height: 14),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: startup.openRoles.take(2).map((role) {
+                children: widget.startup.openRoles.take(2).map((role) {
                   return Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -909,8 +1082,8 @@ class _StartupCard extends StatelessWidget {
             Wrap(
               spacing: 6,
               runSpacing: 6,
-              children: startup.requiredSkills.map((skill) {
-                final isMatch = studentSkills.contains(skill);
+              children: widget.startup.requiredSkills.map((skill) {
+                final isMatch = widget.studentSkills.contains(skill);
                 return Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
@@ -938,10 +1111,11 @@ class _StartupCard extends StatelessWidget {
                 );
               }).toList(),
             ),
-          ],
+              ],
+            ),
+          ),
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -1055,6 +1229,51 @@ class _NavItem extends StatelessWidget {
               ),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// Icon Action Chip Widget (compact version for quick actions)
+class _IconActionChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _IconActionChip({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          decoration: BoxDecoration(
+            color: AppTheme.primary.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 16, color: AppTheme.primary),
+              const SizedBox(width: 4),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: AppTheme.primary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

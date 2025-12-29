@@ -438,27 +438,52 @@ class _RoleCard extends StatelessWidget {
             color: isSelected ? AppTheme.primary : AppTheme.cardBackground,
             width: 2,
           ),
-          boxShadow: isSelected ? AppTheme.cardShadow : null,
+          boxShadow: isSelected
+              ? AppTheme.cardShadow
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 gradient: isSelected
                     ? LinearGradient(
                         colors: [AppTheme.primary, AppTheme.primaryDark],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       )
-                    : null,
-                color: isSelected ? null : AppTheme.cardBackground,
+                    : LinearGradient(
+                        colors: [
+                          AppTheme.primary.withValues(alpha: 0.1),
+                          AppTheme.primary.withValues(alpha: 0.05),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                 borderRadius: BorderRadius.circular(14),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: AppTheme.primary.withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : null,
               ),
               child: Icon(
                 icon,
-                color: isSelected ? Colors.white : AppTheme.textSecondary,
-                size: 24,
+                color: isSelected ? Colors.white : AppTheme.primary.withValues(alpha: 0.8),
+                size: 26,
               ),
             ),
             const SizedBox(height: 12),
