@@ -19,6 +19,7 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String? _selectedSkill;
+  bool _statsExpanded = false;
 
   @override
   void initState() {
@@ -350,211 +351,246 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
     final applications =
         startupApplications.isNotEmpty ? startupApplications : appState.applications;
 
+    final skillsForFilters = startupProfile?.requiredSkills ?? [];
+
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppTheme.surface,
-                border: Border(
-                  bottom: BorderSide(color: AppTheme.cardBackground),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  border: Border(
+                    bottom: BorderSide(color: AppTheme.cardBackground),
+                  ),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                startupProfile?.companyName ?? 'Your Company',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              const Text(
+                                'Find Talent',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppTheme.text,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => context.pushNamed('startupProfile'),
+                          child: Container(
+                            width: 46,
+                            height: 46,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [AppTheme.primary, AppTheme.primaryDark],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.primary.withValues(alpha: 0.24),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                startupProfile?.companyName.isNotEmpty == true
+                                    ? startupProfile!.companyName[0].toUpperCase()
+                                    : '?',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () => setState(() => _statsExpanded = !_statsExpanded),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.cardBackground.withValues(alpha: 0.35),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
                           children: [
-                            Text(
-                              startupProfile?.companyName ?? 'Your Company',
+                            Icon(Icons.analytics_outlined, size: 16, color: AppTheme.textSecondary),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Your Stats',
                               style: TextStyle(
-                                fontSize: 15,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
                                 color: AppTheme.textSecondary,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              'Find Talent',
-                              style: TextStyle(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w800,
-                                color: AppTheme.text,
+                            const Spacer(),
+                            Icon(
+                              _statsExpanded ? Icons.expand_less : Icons.expand_more,
+                              size: 18,
+                              color: AppTheme.textSecondary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    if (_statsExpanded) ...[
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: AppTheme.cardBackground.withValues(alpha: 0.25),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _StatItem(
+                                icon: Icons.people_rounded,
+                                label: 'Students',
+                                value: '${_filteredStudents.length}',
+                                color: AppTheme.primary,
+                              ),
+                            ),
+                            Container(width: 1, height: 32, color: AppTheme.surface),
+                            Expanded(
+                              child: _StatItem(
+                                icon: Icons.inbox_rounded,
+                                label: 'Learners',
+                                value: '${applications.length}',
+                                color: AppTheme.success,
+                              ),
+                            ),
+                            Container(width: 1, height: 32, color: AppTheme.surface),
+                            Expanded(
+                              child: _StatItem(
+                                icon: Icons.work_rounded,
+                                label: 'Roles',
+                                value: '${startupProfile?.openRoles.length ?? 0}',
+                                color: AppTheme.warning,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () => context.pushNamed('startupProfile'),
-                        child: Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _StickyHeaderDelegate(
+                minHeight: 110,
+                maxHeight: 118,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+                  color: AppTheme.surface,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: AppTheme.cardBackground,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: TabBar(
+                          controller: _tabController,
+                          labelColor: Colors.white,
+                          unselectedLabelColor: AppTheme.textSecondary,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          dividerColor: Colors.transparent,
+                          indicator: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [AppTheme.primary, AppTheme.primaryDark],
                             ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppTheme.primary.withValues(alpha: 0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Center(
-                            child: Text(
-                              startupProfile?.companyName.isNotEmpty == true
-                                  ? startupProfile!.companyName[0].toUpperCase()
-                                  : '?',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white,
-                                fontSize: 18,
+                          labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12),
+                          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                          tabs: [
+                            Tab(text: 'Students (${_filteredStudents.length})'),
+                            Tab(text: 'Learners (${applications.length})'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _FilterChip(
+                              label: 'All Skills',
+                              isSelected: _selectedSkill == null,
+                              onTap: () => setState(() => _selectedSkill = null),
+                            ),
+                            ...skillsForFilters.take(6).map(
+                              (skill) => _FilterChip(
+                                label: skill,
+                                isSelected: _selectedSkill == skill,
+                                onTap: () => setState(() => _selectedSkill = skill),
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  // Stats row
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppTheme.cardBackground,
-                          AppTheme.surface,
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: _StatItem(
-                            icon: Icons.people_rounded,
-                            label: 'Students',
-                            value: '${_filteredStudents.length}',
-                            color: AppTheme.primary,
-                          ),
-                        ),
-                        Container(
-                          width: 1,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppTheme.cardBackground,
-                                AppTheme.textMuted.withValues(alpha: 0.1),
-                                AppTheme.cardBackground,
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: _StatItem(
-                            icon: Icons.inbox_rounded,
-                            label: 'Learners',
-                            value: '${applications.length}',
-                            color: AppTheme.success,
-                          ),
-                        ),
-                        Container(
-                          width: 1,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                AppTheme.cardBackground,
-                                AppTheme.textMuted.withValues(alpha: 0.1),
-                                AppTheme.cardBackground,
-                              ],
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: _StatItem(
-                            icon: Icons.work_rounded,
-                            label: 'Roles',
-                            value: '${startupProfile?.openRoles.length ?? 0}',
-                            color: AppTheme.warning,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-            // Tab bar
-            Container(
-              margin: const EdgeInsets.all(20),
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: AppTheme.cardBackground,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                labelColor: Colors.white,
-                unselectedLabelColor: AppTheme.textSecondary,
-                indicatorSize: TabBarIndicatorSize.tab,
-                dividerColor: Colors.transparent,
-                indicator: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppTheme.primary, AppTheme.primaryDark],
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primary.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+                child: Row(
+                  children: const [
+                    Text(
+                      'Recommended students',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppTheme.primary,
+                      ),
                     ),
                   ],
                 ),
-                labelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
-                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                tabs: [
-                  Tab(text: 'Students (${_filteredStudents.length})'),
-                  Tab(text: 'Learners (${applications.length})'),
-                ],
               ),
             ),
-            Expanded(
+            SliverFillRemaining(
               child: TabBarView(
                 controller: _tabController,
                 children: [
                   _BrowseStudentsTab(
                     students: _filteredStudents,
-                    startupSkills: startupProfile?.requiredSkills ?? [],
+                    startupSkills: skillsForFilters,
                     selectedSkill: _selectedSkill,
-                    onSkillSelected: (skill) =>
-                        setState(() => _selectedSkill = skill),
                   ),
                   _ApplicationsTab(
                     applications: applications,
@@ -579,6 +615,39 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
       ),
     );
   }
+  }
+
+class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  _StickyHeaderDelegate({
+    required this.child,
+    required this.minHeight,
+    required this.maxHeight,
+  });
+
+  final Widget child;
+  final double minHeight;
+  final double maxHeight;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => maxHeight;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: AppTheme.surface,
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _StickyHeaderDelegate oldDelegate) {
+    return child != oldDelegate.child ||
+        minHeight != oldDelegate.minHeight ||
+        maxHeight != oldDelegate.maxHeight;
+  }
 }
 
 class _StatItem extends StatelessWidget {
@@ -599,8 +668,8 @@ class _StatItem extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 48,
-          height: 48,
+          width: 40,
+          height: 40,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -619,17 +688,13 @@ class _StatItem extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
+          child: Icon(icon, color: color, size: 20),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
           value,
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 16,
             fontWeight: FontWeight.w800,
             color: AppTheme.text,
           ),
@@ -638,7 +703,7 @@ class _StatItem extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: FontWeight.w600,
             color: AppTheme.textSecondary,
           ),
@@ -653,66 +718,45 @@ class _BrowseStudentsTab extends StatelessWidget {
     required this.students,
     required this.startupSkills,
     required this.selectedSkill,
-    required this.onSkillSelected,
   });
 
   final List<StudentProfile> students;
   final List<String> startupSkills;
   final String? selectedSkill;
-  final ValueChanged<String?> onSkillSelected;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _FilterChip(
-                  label: 'All Skills',
-                  isSelected: selectedSkill == null,
-                  onTap: () => onSkillSelected(null),
+    return students.isEmpty
+        ? _EmptyState(
+            icon: Icons.person_search_rounded,
+            title: 'No students found',
+            subtitle: 'Try adjusting your filters',
+          )
+        : ListView.builder(
+            key: PageStorageKey('students_${selectedSkill ?? 'all'}'),
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+            primary: false,
+            physics: const BouncingScrollPhysics(),
+            itemCount: students.length,
+            itemBuilder: (context, index) {
+              final student = students[index];
+              return Padding(
+                padding: EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  bottom: index < students.length - 1 ? 24 : 12,
                 ),
-                ...startupSkills.map(
-                  (skill) => _FilterChip(
-                    label: skill,
-                    isSelected: selectedSkill == skill,
-                    onTap: () => onSkillSelected(skill),
+                child: _StudentCard(
+                  student: student,
+                  startupSkills: startupSkills,
+                  onTap: () => context.pushNamed(
+                    'studentDetail',
+                    pathParameters: {'id': student.id},
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Expanded(
-          child: students.isEmpty
-              ? _EmptyState(
-                  icon: Icons.person_search_rounded,
-                  title: 'No students found',
-                  subtitle: 'Try adjusting your filters',
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: students.length,
-                  itemBuilder: (context, index) {
-                    final student = students[index];
-                    return _StudentCard(
-                      student: student,
-                      startupSkills: startupSkills,
-                      onTap: () => context.pushNamed(
-                        'studentDetail',
-                        pathParameters: {'id': student.id},
-                      ),
-                    );
-                  },
-                ),
-        ),
-      ],
-    );
+              );
+            },
+          );
   }
 }
 
@@ -739,6 +783,8 @@ class _ApplicationsTab extends StatelessWidget {
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20),
+      primary: false,
+      physics: const BouncingScrollPhysics(),
       itemCount: applications.length,
       itemBuilder: (context, index) {
         final application = applications[index];
@@ -828,7 +874,7 @@ class _FilterChip extends StatelessWidget {
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             gradient: isSelected
                 ? LinearGradient(
