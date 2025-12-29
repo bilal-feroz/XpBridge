@@ -358,16 +358,12 @@ class StudentApplicationsScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppTheme.cardBackground,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: const Icon(
-                          Icons.inbox_rounded,
-                          size: 48,
-                          color: AppTheme.textMuted,
+                      SizedBox(
+                        width: 140,
+                        height: 140,
+                        child: Image.asset(
+                          'assets/illustrations/not found.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
                       const SizedBox(height: 12),

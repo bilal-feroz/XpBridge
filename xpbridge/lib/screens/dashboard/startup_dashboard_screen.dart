@@ -776,14 +776,13 @@ class _EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: AppTheme.surface,
-                borderRadius: BorderRadius.circular(24),
+            SizedBox(
+              width: 140,
+              height: 140,
+              child: Image.asset(
+                'assets/illustrations/not found.png',
+                fit: BoxFit.contain,
               ),
-              child: Icon(icon, size: 40, color: AppTheme.textMuted),
             ),
             const SizedBox(height: 20),
             Text(
