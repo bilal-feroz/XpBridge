@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app.dart';
+import '../../services/user_file_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/xp_button.dart';
 import '../../widgets/xp_card.dart';
@@ -87,9 +88,28 @@ class _SignupScreenState extends State<SignupScreen> {
         _passwordError == null &&
         _roleError == null) {
       final email = _emailController.text.trim().toLowerCase();
+      final password = _passwordController.text;
       final name = _nameController.text.trim();
       final role = _selectedRole == UserRole.student ? 'student' : 'startup';
 
+      // Check if user already exists in the txt file
+      if (await UserFileService.userExists(email)) {
+        setState(() {
+          _emailError = 'Account already exists. Please login.';
+        });
+        return;
+      }
+
+      // Save user credentials to txt file
+      final saved = await UserFileService.saveUser(email, password);
+      if (!saved) {
+        setState(() {
+          _emailError = 'Failed to create account. Please try again.';
+        });
+        return;
+      }
+
+      // Still save other data to SharedPreferences for profile info
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_email', email);
       await prefs.setString('user_name', name);

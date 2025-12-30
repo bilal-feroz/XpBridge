@@ -8,6 +8,7 @@ import '../../app.dart';
 import '../../models/student_profile.dart';
 import '../../models/startup_profile.dart';
 import '../../models/startup_role.dart';
+import '../../services/user_file_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/xp_button.dart';
 import '../../widgets/xp_card.dart';
@@ -70,17 +71,29 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (_emailError == null && _passwordError == null) {
-      final prefs = await SharedPreferences.getInstance();
-      final savedEmail = prefs.getString('user_email');
-      final savedRole = prefs.getString('user_role');
       final enteredEmail = _emailController.text.trim().toLowerCase();
+      final enteredPassword = _passwordController.text;
 
-      if (savedEmail == null || savedEmail != enteredEmail) {
+      // Check if user exists in the txt file
+      final userExists = await UserFileService.userExists(enteredEmail);
+      if (!userExists) {
         setState(() {
           _emailError = 'Account not found. Please sign up first.';
         });
         return;
       }
+
+      // Validate credentials from txt file
+      final isValid = await UserFileService.validateUser(enteredEmail, enteredPassword);
+      if (!isValid) {
+        setState(() {
+          _passwordError = 'Incorrect password. Please try again.';
+        });
+        return;
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      final savedRole = prefs.getString('user_role');
 
       if (!mounted) return;
 
@@ -97,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final profile = StudentProfile(
             id: 'user_restored',
             name: name,
-            email: savedEmail,
+            email: enteredEmail,
             bio: prefs.getString('profile_bio'),
             education: prefs.getString('profile_education'),
             skills: prefs.getStringList('profile_skills') ?? [],
@@ -127,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
           final profile = StartupProfile(
             id: 'startup_restored',
             companyName: companyName,
-            email: savedEmail,
+            email: enteredEmail,
             description: prefs.getString('startup_description') ?? '',
             industry: prefs.getString('startup_industry') ?? '',
             requiredSkills: prefs.getStringList('startup_skills') ?? [],

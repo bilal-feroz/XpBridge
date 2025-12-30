@@ -507,8 +507,8 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
             SliverPersistentHeader(
               pinned: true,
               delegate: _StickyHeaderDelegate(
-                minHeight: 110,
-                maxHeight: 118,
+                minHeight: 120,
+                maxHeight: 130,
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
                   color: AppTheme.surface,
@@ -603,6 +603,15 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.pushNamed('startupAiChat'),
+        backgroundColor: AppTheme.primary,
+        icon: const Icon(Icons.auto_awesome, color: Colors.white),
+        label: const Text(
+          'AI Search',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+        ),
+      ),
       bottomNavigationBar: _BottomNav(
         currentIndex: 0,
         onTap: (index) {
@@ -615,7 +624,7 @@ class _StartupDashboardScreenState extends State<StartupDashboardScreen>
       ),
     );
   }
-  }
+}
 
 class _StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   _StickyHeaderDelegate({

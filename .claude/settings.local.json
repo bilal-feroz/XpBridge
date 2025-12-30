@@ -5,7 +5,8 @@
       "Bash(flutter analyze:*)",
       "Bash(flutter pub add:*)",
       "Bash(flutter doctor:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(curl:*)"
     ]
   }
 }
