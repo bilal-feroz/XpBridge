@@ -1,17 +1,27 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../app.dart';
 import '../../models/startup_role.dart';
 import '../../models/startup_profile.dart';
+import '../../services/logo_image_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/xp_card.dart';
 
-class StartupProfileScreen extends StatelessWidget {
+class StartupProfileScreen extends StatefulWidget {
   const StartupProfileScreen({super.key});
+
+  @override
+  State<StartupProfileScreen> createState() => _StartupProfileScreenState();
+}
+
+class _StartupProfileScreenState extends State<StartupProfileScreen> {
+  bool _savingLogo = false;
 
   Future<void> _handleLogout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -30,6 +40,101 @@ class StartupProfileScreen extends StatelessWidget {
       'startup_roles',
       jsonEncode(roles.map((r) => r.toMap()).toList()),
     );
+  }
+
+  Future<void> _persistLogo(String base64) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(LogoImageService.storageKey, base64);
+  }
+
+  Future<ImageSource?> _chooseImageSource() {
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: AppTheme.elevatedShadow,
+            ),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 10),
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.cardBackground,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ListTile(
+                    leading: const Icon(Icons.photo_library_outlined),
+                    title: const Text('Upload from gallery'),
+                    onTap: () => Navigator.of(ctx).pop(ImageSource.gallery),
+                  ),
+                  const Divider(height: 1),
+                  ListTile(
+                    leading: const Icon(Icons.photo_camera_outlined),
+                    title: const Text('Take a photo'),
+                    onTap: () => Navigator.of(ctx).pop(ImageSource.camera),
+                  ),
+                  const SizedBox(height: 6),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _editLogo(AppState appState, StartupProfile? profile) async {
+    if (profile == null || _savingLogo) return;
+
+    final source = await _chooseImageSource();
+    if (source == null) return;
+
+    setState(() => _savingLogo = true);
+    try {
+      final bytes = await LogoImageService.pickAndEdit(
+        context: context,
+        source: source,
+      );
+      if (bytes == null) return;
+
+      final encoded = LogoImageService.encode(bytes);
+      final updatedProfile = profile.copyWith(logoBase64: encoded);
+      appState.saveStartupProfile(updatedProfile);
+      await _persistLogo(encoded);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Company logo updated'),
+          backgroundColor: AppTheme.successDark,
+        ),
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not update the logo. Please try again.'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _savingLogo = false);
+      }
+    }
   }
 
   void _showAddRoleSheet(
@@ -294,6 +399,7 @@ class StartupProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final appState = AppStateScope.of(context);
     final profile = appState.startupProfile;
+    final Uint8List? logoBytes = LogoImageService.decode(profile?.logoBase64);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -358,36 +464,89 @@ class StartupProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   // Company Logo
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [AppTheme.primary, AppTheme.primaryDark],
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primary.withValues(alpha: 0.35),
-                          blurRadius: 20,
-                          offset: const Offset(0, 8),
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          gradient: logoBytes != null
+                              ? null
+                              : LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [AppTheme.primary, AppTheme.primaryDark],
+                                ),
+                          borderRadius: BorderRadius.circular(24),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primary.withValues(alpha: 0.35),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                          image: logoBytes != null
+                              ? DecorationImage(
+                                  image: MemoryImage(logoBytes),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
                         ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        profile?.companyName.isNotEmpty == true
-                            ? profile!.companyName[0].toUpperCase()
-                            : '?',
-                        style: const TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
+                        child: logoBytes != null
+                            ? null
+                            : Center(
+                                child: Text(
+                                  profile?.companyName.isNotEmpty == true
+                                      ? profile!.companyName[0].toUpperCase()
+                                      : '?',
+                                  style: const TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
                       ),
-                    ),
+                      if (_savingLogo)
+                        Positioned.fill(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.25),
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            child: const Center(
+                              child: SizedBox(
+                                width: 28,
+                                height: 28,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                  valueColor: AlwaysStoppedAnimation(Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      if (profile != null)
+                        Positioned(
+                          bottom: -14,
+                          right: -14,
+                          child: Material(
+                            color: AppTheme.surface,
+                            shape: const CircleBorder(),
+                            elevation: 4,
+                            shadowColor: AppTheme.primary.withValues(alpha: 0.3),
+                            child: IconButton(
+                              tooltip: 'Edit logo',
+                              icon: const Icon(
+                                Icons.edit,
+                                color: AppTheme.primary,
+                              ),
+                              onPressed: () => _editLogo(appState, profile),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   Text(

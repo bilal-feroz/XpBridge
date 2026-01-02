@@ -146,6 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
             requiredSkills: prefs.getStringList('startup_skills') ?? [],
             openRoles: roles,
             projectDetails: prefs.getString('startup_project'),
+            logoBase64: prefs.getString('startup_logo_base64'),
             createdAt: DateTime.now(),
           );
           appState.saveStartupProfile(profile);

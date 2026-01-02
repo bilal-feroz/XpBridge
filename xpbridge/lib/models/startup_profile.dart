@@ -11,6 +11,7 @@ class StartupProfile {
   final List<StartupRole> openRoles;
   final String? websiteUrl;
   final String? logoUrl;
+  final String? logoBase64;
   final String? projectDetails;
   final DateTime createdAt;
 
@@ -25,6 +26,7 @@ class StartupProfile {
     this.openRoles = const [],
     this.websiteUrl,
     this.logoUrl,
+    this.logoBase64,
     this.projectDetails,
     required this.createdAt,
   });
@@ -40,6 +42,7 @@ class StartupProfile {
     List<StartupRole>? openRoles,
     String? websiteUrl,
     String? logoUrl,
+    String? logoBase64,
     String? projectDetails,
     DateTime? createdAt,
   }) {
@@ -54,6 +57,7 @@ class StartupProfile {
       openRoles: openRoles ?? this.openRoles,
       websiteUrl: websiteUrl ?? this.websiteUrl,
       logoUrl: logoUrl ?? this.logoUrl,
+      logoBase64: logoBase64 ?? this.logoBase64,
       projectDetails: projectDetails ?? this.projectDetails,
       createdAt: createdAt ?? this.createdAt,
     );

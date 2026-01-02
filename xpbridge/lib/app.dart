@@ -106,6 +106,7 @@ class AppState extends ChangeNotifier {
       final skills = prefs.getStringList('startup_skills') ?? [];
       final project = prefs.getString('startup_project');
       final rolesJson = prefs.getString('startup_roles');
+      final logoBase64 = prefs.getString('startup_logo_base64');
 
       if (companyName.isEmpty) return false;
 
@@ -130,6 +131,7 @@ class AppState extends ChangeNotifier {
         requiredSkills: skills,
         projectDetails: project,
         openRoles: roles,
+        logoBase64: logoBase64,
         createdAt: DateTime.now(),
       );
     }
